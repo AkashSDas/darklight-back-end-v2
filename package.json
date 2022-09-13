@@ -1,0 +1,41 @@
+{
+  "name": "darklight-back-end",
+  "version": "1.0.0",
+  "description": "Backend (REST API) for the DarkLight project",
+  "main": "index.js",
+  "author": "AkashSDas",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc",
+    "start": "node lib/index.js",
+    "dev": "concurrently \"tsc -w\" \"nodemon lib/index.js\"",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@typegoose/typegoose": "^9.11.2",
+    "bcryptjs": "^2.4.3",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.2",
+    "express": "^4.18.1",
+    "express-rate-limit": "^6.6.0",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^6.6.0",
+    "morgan": "^1.10.0",
+    "nanoid": "^4.0.0",
+    "nodemailer": "^6.7.8",
+    "validator": "^13.7.0",
+    "winston": "^3.8.2",
+    "zod": "^3.19.1"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.2",
+    "@types/cookie-parser": "^1.4.3",
+    "@types/jsonwebtoken": "^8.5.9",
+    "@types/morgan": "^1.9.3",
+    "@types/nodemailer": "^6.4.6",
+    "@types/validator": "^13.7.6",
+    "concurrently": "^7.4.0",
+    "nodemon": "^2.0.19"
+  }
+}
