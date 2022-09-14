@@ -29,7 +29,7 @@ export const signup = async (
 
   // Send email verification link to user's email
   const token = user.generateEmailVerificationToken();
-  await user.save({ validateModifiedOnly: false }); // saving token info to DB
+  await user.save({ validateModifiedOnly: true }); // saving token info to DB
   logger.info(user);
 
   // Doing this after the user is saved to DB because if it is done above the passwordDigest will be undefined
@@ -61,7 +61,7 @@ export const signup = async (
     // If sending email fails then make `emailVerificationToken` and `emailVerificationTokenExpiry` as undefined
     user.emailVerificationToken = undefined;
     user.emailVerificationTokenExpiry = undefined;
-    await user.save({ validateModifiedOnly: false });
+    await user.save({ validateModifiedOnly: true });
 
     logger.error(error);
     sendResponseToClient(res, {
@@ -93,7 +93,7 @@ export const getEmailVerificationLink = async (
   if (user.emailVerified) throw new BaseApiError(400, "Email already verified");
 
   const token = user.generateEmailVerificationToken();
-  await user.save({ validateModifiedOnly: false }); // saving token info to DB
+  await user.save({ validateModifiedOnly: true }); // saving token info to DB
 
   // URL sent to the user for verifying user's email
   const endpoint = `/api/base-auth/confirm-email/${token}`;
@@ -146,7 +146,7 @@ export const confirmEmail = async (
   user.emailVerificationToken = undefined;
   user.emailVerificationTokenExpiry = undefined;
   user.isActive = true;
-  await user.save({ validateModifiedOnly: false });
+  await user.save({ validateModifiedOnly: true });
 
   sendResponseToClient(res, {
     status: 200,
