@@ -190,6 +190,15 @@ export const login = async (
   });
 };
 
+export const checkAuth = async (req: Request, res: Response) => {
+  logger.info(req.user);
+  sendResponseToClient(res, {
+    status: 200,
+    error: false,
+    msg: "You are authenticated",
+  });
+};
+
 export const forgotPassword = async () => {};
 
 export const resetPassword = async () => {};
