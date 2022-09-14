@@ -32,7 +32,15 @@ export const getEmailVerificationLinkSchema = object({
   }),
 });
 
+/** Confirm email request's input schema */
+export const confirmEmailSchema = object({
+  params: object({ token: string() }),
+});
+
 export type SignupUserInputBody = TypeOf<typeof signupUserSchema>["body"];
 export type GetEmailVerificationLinkInputBody = TypeOf<
   typeof getEmailVerificationLinkSchema
 >["body"];
+export type ConfirmEmailInputParams = TypeOf<
+  typeof confirmEmailSchema
+>["params"];

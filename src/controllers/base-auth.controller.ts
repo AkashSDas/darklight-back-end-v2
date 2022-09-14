@@ -1,7 +1,8 @@
+import crypto from "crypto";
 import { Request, Response } from "express";
 
 import logger from "../logger";
-import { GetEmailVerificationLinkInputBody, SignupUserInputBody } from "../schema/base-auth.schema";
+import { ConfirmEmailInputParams, GetEmailVerificationLinkInputBody, SignupUserInputBody } from "../schema/base-auth.schema";
 import { createUser, getUser } from "../services/user.service";
 import { sendResponseToClient } from "../utils/client-response";
 import { BaseApiError } from "../utils/handle-error";
@@ -87,6 +88,9 @@ export const getEmailVerificationLink = async (
   const user = await getUser({ email });
   if (!user) throw new BaseApiError(404, "User does not exists");
 
+  // Check if user is already verified
+  if (user.emailVerified) throw new BaseApiError(400, "Email already verified");
+
   const token = user.generateEmailVerificationToken();
   await user.save({ validateModifiedOnly: false }); // saving token info to DB
 
@@ -119,7 +123,36 @@ export const getEmailVerificationLink = async (
   }
 };
 
-export const confirmEmail = async () => {};
+export const confirmEmail = async (
+  req: Request<ConfirmEmailInputParams>,
+  res: Response
+) => {
+  logger.info(req.params.token);
+  /** Encrypted the token given by the user */
+  const encryptedToken = crypto
+    .createHash("sha256")
+    .update(req.params.token)
+    .digest("hex");
+
+  const user = await getUser({
+    emailVerificationToken: encryptedToken,
+    emailVerificationTokenExpiry: { $gt: new Date(Date.now()) },
+  });
+  if (!user) throw new BaseApiError(400, "Invalid or expired token");
+
+  // Verifying user's email and making the account active
+  user.emailVerified = true;
+  user.emailVerificationToken = undefined;
+  user.emailVerificationTokenExpiry = undefined;
+  user.isActive = true;
+  await user.save({ validateModifiedOnly: false });
+
+  sendResponseToClient(res, {
+    status: 200,
+    error: false,
+    msg: "Email is verified and your account is activated",
+  });
+};
 
 export const forgotPassword = async () => {};
 

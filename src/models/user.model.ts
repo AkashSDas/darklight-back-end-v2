@@ -230,29 +230,6 @@ export class UserClass {
     return token;
   }
 
-  /**
-   * Check if the email verification token given by the user is valid OR not
-   *
-   * @param token The token sent by the user
-   * @returns {boolean} Returns true if the token is valid and not expired else returns false
-   */
-  verifyEmailVerificationToken(token: string): boolean {
-    /** Encrypted the token given by the user */
-    const encryptedToken = crypto
-      .createHash("sha256")
-      .update(token)
-      .digest("hex");
-
-    if (
-      this.emailVerificationToken === encryptedToken &&
-      this.emailVerificationTokenExpiry > new Date()
-    ) {
-      return true;
-    }
-
-    return false;
-  }
-
   // ========================================
   // VIRTUALS
   // ========================================
