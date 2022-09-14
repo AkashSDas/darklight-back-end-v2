@@ -1,5 +1,6 @@
 import crypto from "crypto";
 import { Request, Response } from "express";
+import jwt from "jsonwebtoken";
 
 import logger from "../logger";
 import { ConfirmEmailInputParams, GetEmailVerificationLinkInputBody, LoginInputBody, SignupUserInputBody } from "../schema/base-auth.schema";
@@ -197,6 +198,39 @@ export const checkAuth = async (req: Request, res: Response) => {
     error: false,
     msg: "You are authenticated",
   });
+};
+
+export const refresh = async (req: Request, res: Response) => {
+  const cookies = req.cookies;
+  if (!cookies?.jwt) {
+    throw new BaseApiError(401, "Session expired, Please login again");
+  }
+
+  const refreshToken = cookies.jwt;
+  // Verify refresh token
+  try {
+    jwt.verify(
+      refreshToken,
+      process.env.REFRESH_TOKEN_SECRET,
+      async (err, decoded) => {
+        if (err) throw new BaseApiError(403, "Forbidden");
+
+        const user = await getUser({ userId: decoded.userId });
+        if (!user) throw new BaseApiError(404, "User does not exists");
+
+        const accessToken = user.generateAccessToken();
+        sendResponseToClient(res, {
+          status: 200,
+          error: false,
+          msg: "Access token refreshed",
+          data: { user, accessToken },
+        });
+      }
+    );
+  } catch (err) {
+    logger.error(err);
+    throw new BaseApiError(500, "Something went wrong please try again");
+  }
 };
 
 export const forgotPassword = async () => {};
