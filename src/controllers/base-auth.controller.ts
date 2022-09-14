@@ -118,3 +118,13 @@ export const getEmailVerificationLink = async (
     });
   }
 };
+
+export const confirmEmail = async () => {};
+
+export const forgotPassword = async () => {};
+
+export const resetPassword = async () => {};
+
+export const login = async () => {};
+
+export const logout = async () => {};
