@@ -52,3 +52,10 @@ export const updateUser = async (
     fields: "-_id -__v",
   }).exec();
 };
+
+export const getUserWithFields = async (
+  filter: FilterQuery<UserClass>,
+  select: string
+) => {
+  return await UserModel.findOne(filter).select(`${select} -__v`).exec();
+};
