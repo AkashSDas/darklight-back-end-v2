@@ -159,11 +159,10 @@ export class UserClass {
    */
   generatePasswordResetToken(): string {
     /**
-     * A long/random string that will be sent to the user and user will sent this
-     * token back to the back-end while reseting the password. It will then be hashed
-     * and then compared with the `passwordResetToken` set on the user along with the
-     * `passwordResetTokenExpiry` using the `verifyPasswordResetToken()` method on `UserClass`.
-     * If the token is valid and not expired, then the password will be reset.
+     * This token will be sent to the user and user will sent this back to the back-end
+     * while reseting password. The token given by user will be hashed and checked
+     * (`passwordResetToken`) if its valid OR not. If its valid and not expired
+     * (`passwordResetTokenExpiry`) then password will be reset.
      */
     const token = crypto.randomBytes(20).toString("hex");
 
@@ -180,29 +179,6 @@ export class UserClass {
   }
 
   /**
-   * Check if the password reset token given by the user is valid OR not
-   *
-   * @param token The token sent by the user
-   * @returns {boolean} Returns true if the token is valid and not expired else returns false
-   */
-  verifyPasswordResetToken(token: string): boolean {
-    /** Encrypted the token given by the user */
-    const encryptedToken = crypto
-      .createHash("sha256")
-      .update(token)
-      .digest("hex");
-
-    if (
-      this.passwordResetToken === encryptedToken &&
-      this.passwordResetTokenExpiry > new Date()
-    ) {
-      return true;
-    }
-
-    return false;
-  }
-
-  /**
    * Generate a random token, hash it and then save the hashed token to the user's document along with an
    * expiry date of 10mins.
    *
@@ -212,9 +188,9 @@ export class UserClass {
     /**
      * This token will be sent to the user and user will sent this back to the back-end
      * while verifying the email. The token given by user will be hashed and checked
-     * (`passwordResetToken`) if its valid OR not. If its valid and not expired
-     * (`passwordResetTokenExpiry`), then the email will be verified and account will
-     * be set to active.
+     * (`emailVerificationToken`) if its valid OR not. If its valid and not expired
+     * (`emailVerificationTokenExpiry`), then the email will be verified and account
+     * will be set to active.
      */
     const token = crypto.randomBytes(20).toString("hex");
 
