@@ -1,9 +1,9 @@
 import { Router } from "express";
 
-import { checkAuth, confirmEmail, forgotPassword, getEmailVerificationLink, login, refresh, signup } from "../controllers/base-auth.controller";
+import { checkAuth, confirmEmail, forgotPassword, getEmailVerificationLink, login, refresh, resetPassword, signup } from "../controllers/base-auth.controller";
 import { validateResource } from "../middlewares/validate-resource.middleware";
 import { verifyJwt } from "../middlewares/verify-jwt";
-import { confirmEmailSchema, forgotPasswordSchema, getEmailVerificationLinkSchema, loginSchema, signupUserSchema } from "../schema/base-auth.schema";
+import { confirmEmailSchema, forgotPasswordSchema, getEmailVerificationLinkSchema, loginSchema, passwordResetSchema, signupUserSchema } from "../schema/base-auth.schema";
 import { handleAsyncMiddleware } from "../utils/handle-async";
 import { handleMiddlewareError } from "../utils/handle-error";
 
@@ -45,5 +45,11 @@ router
     "/forgot-password",
     validateResource(forgotPasswordSchema),
     handleAsyncMiddleware(forgotPassword),
+    handleMiddlewareError
+  )
+  .post(
+    "/password-reset/:token",
+    validateResource(passwordResetSchema),
+    handleAsyncMiddleware(resetPassword),
     handleMiddlewareError
   );

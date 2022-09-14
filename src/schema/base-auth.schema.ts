@@ -63,6 +63,20 @@ export const forgotPasswordSchema = object({
   }),
 });
 
+/** Password reset request's input schema */
+export const passwordResetSchema = object({
+  params: object({ token: string() }),
+  body: object({
+    password: string({ required_error: "Password is required" }).min(6, {
+      message: "Password must be more than 6 characters",
+    }),
+    confirmPassword: string({ required_error: "Confirm password is required" }),
+  }).refine((data) => data.password === data.confirmPassword, {
+    message: "Password and confirm password does not match",
+    path: ["confirmPassword"],
+  }),
+});
+
 export type SignupUserInputBody = TypeOf<typeof signupUserSchema>["body"];
 export type GetEmailVerificationLinkInputBody = TypeOf<
   typeof getEmailVerificationLinkSchema
@@ -74,3 +88,4 @@ export type LoginInputBody = TypeOf<typeof loginSchema>["body"];
 export type ForgotPasswordInputBody = TypeOf<
   typeof forgotPasswordSchema
 >["body"];
+export type PasswordResetInput = TypeOf<typeof passwordResetSchema>;

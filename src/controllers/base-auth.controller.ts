@@ -3,7 +3,7 @@ import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 
 import logger from "../logger";
-import { ConfirmEmailInputParams, ForgotPasswordInputBody, GetEmailVerificationLinkInputBody, LoginInputBody, SignupUserInputBody } from "../schema/base-auth.schema";
+import { ConfirmEmailInputParams, ForgotPasswordInputBody, GetEmailVerificationLinkInputBody, LoginInputBody, PasswordResetInput, SignupUserInputBody } from "../schema/base-auth.schema";
 import { createUser, getUser, getUserWithFields } from "../services/user.service";
 import { sendResponseToClient } from "../utils/client-response";
 import { BaseApiError } from "../utils/handle-error";
@@ -275,6 +275,38 @@ export const forgotPassword = async (
   }
 };
 
-export const resetPassword = async () => {};
+export const resetPassword = async (
+  req: Request<PasswordResetInput["params"], {}, PasswordResetInput["body"]>,
+  res: Response
+) => {
+  logger.info(req.params.token);
+  /** Encrypted the token given by the user */
+  const encryptedToken = crypto
+    .createHash("sha256")
+    .update(req.params.token)
+    .digest("hex");
+
+  const user = await getUser({
+    passwordResetToken: encryptedToken,
+    passwordResetTokenExpiry: { $gt: new Date(Date.now()) },
+  });
+  if (!user) throw new BaseApiError(400, "Invalid or expired token");
+
+  user.passwordDigest = req.body.password; // this will be converted to hash in `pre` Mongoose middleware
+  user.passwordResetToken = null;
+  user.passwordResetTokenExpiry = null;
+
+  // Here no validateModifiedOnly needs to be given since we're updating few fields
+  // and user has already registered meaning all necessary feilds are filled
+  await user.save();
+  user.passwordDigest = undefined; // remove the password digest from the response
+
+  sendResponseToClient(res, {
+    status: 200,
+    error: false,
+    msg: "Password reset is successful",
+    data: { user },
+  });
+};
 
 export const logout = async () => {};
