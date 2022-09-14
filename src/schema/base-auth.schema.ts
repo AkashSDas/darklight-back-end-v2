@@ -23,4 +23,16 @@ export const signupUserSchema = object({
   }),
 });
 
+/** To get email verification link request's input schema */
+export const getEmailVerificationLinkSchema = object({
+  body: object({
+    email: string({ required_error: "Email is required" }).email(
+      "Invalid email"
+    ),
+  }),
+});
+
 export type SignupUserInputBody = TypeOf<typeof signupUserSchema>["body"];
+export type GetEmailVerificationLinkInputBody = TypeOf<
+  typeof getEmailVerificationLinkSchema
+>["body"];

@@ -1,9 +1,10 @@
 import { Request, Response } from "express";
 
 import logger from "../logger";
-import { SignupUserInputBody } from "../schema/base-auth.schema";
-import { createUser } from "../services/user.service";
+import { GetEmailVerificationLinkInputBody, SignupUserInputBody } from "../schema/base-auth.schema";
+import { createUser, getUser } from "../services/user.service";
 import { sendResponseToClient } from "../utils/client-response";
+import { BaseApiError } from "../utils/handle-error";
 import { EmailOptions, sendEmail } from "../utils/send-email";
 
 /**
@@ -66,6 +67,54 @@ export const signup = async (
       error: false,
       msg: "Account created successfully. Please login and verify your email",
       data: { user },
+    });
+  }
+};
+
+/**
+ * Send user an email verification link
+ *
+ * @param req Express request object with `GetEmailVerificationLinkInputBody` as body type
+ * @param res Express response object
+ *
+ * @throws `BaseApiError` if user is not found
+ */
+export const getEmailVerificationLink = async (
+  req: Request<{}, {}, GetEmailVerificationLinkInputBody>,
+  res: Response
+) => {
+  const { email } = req.body;
+  const user = await getUser({ email });
+  if (!user) throw new BaseApiError(404, "User does not exists");
+
+  const token = user.generateEmailVerificationToken();
+  await user.save({ validateModifiedOnly: false }); // saving token info to DB
+
+  // URL sent to the user for verifying user's email
+  const endpoint = `/api/base-auth/confirm-email/${token}`;
+  const confirmEmailURL = `${req.protocol}://${req.get("host")}${endpoint}`;
+
+  const opts: EmailOptions = {
+    to: user.email,
+    subject: "Confirm your email",
+    text: "Confirm your email using the link below",
+    html: `<p>Confirm your email with this 🔗 <a href="${confirmEmailURL}">link</a></p>`,
+  };
+
+  try {
+    // Sending mail
+    await sendEmail(opts);
+    sendResponseToClient(res, {
+      status: 200,
+      error: false,
+      msg: "Email verification link sent to your registered email",
+    });
+  } catch (error) {
+    logger.error(error);
+    sendResponseToClient(res, {
+      status: 500,
+      error: true,
+      msg: "Something went wrong. Please try again later",
     });
   }
 };
