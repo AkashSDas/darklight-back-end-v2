@@ -25,6 +25,10 @@
  * - This code does give error at first while using `Express` types
  */
 
-// declare module "express-serve-static-core" {
-//   interface Request {}
-// }
+import { UserClass } from "../../src/models/user.model";
+
+declare module "express-serve-static-core" {
+  interface Request {
+    user?: UserClass;
+  }
+}
