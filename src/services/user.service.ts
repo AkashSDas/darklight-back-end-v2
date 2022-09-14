@@ -13,7 +13,7 @@ import { UserClass, UserModel } from "../models/user.model";
  * @returns {Promise<UserClass>} Promise of a user
  */
 export const getUser = async (filter: FilterQuery<UserClass>) => {
-  return await UserModel.findOne(filter, "-_v").exec();
+  return await UserModel.findOne(filter, "-__v").exec();
 };
 
 /**
@@ -49,6 +49,6 @@ export const updateUser = async (
 ) => {
   return await UserModel.findOneAndUpdate(filter, data, {
     new: true,
-    fields: "-_id -_v",
+    fields: "-_id -__v",
   }).exec();
 };
