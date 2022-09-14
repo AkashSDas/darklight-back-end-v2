@@ -1,9 +1,9 @@
 import { Router } from "express";
 
-import { checkAuth, confirmEmail, getEmailVerificationLink, login, refresh, signup } from "../controllers/base-auth.controller";
+import { checkAuth, confirmEmail, forgotPassword, getEmailVerificationLink, login, refresh, signup } from "../controllers/base-auth.controller";
 import { validateResource } from "../middlewares/validate-resource.middleware";
 import { verifyJwt } from "../middlewares/verify-jwt";
-import { confirmEmailSchema, getEmailVerificationLinkSchema, loginSchema, signupUserSchema } from "../schema/base-auth.schema";
+import { confirmEmailSchema, forgotPasswordSchema, getEmailVerificationLinkSchema, loginSchema, signupUserSchema } from "../schema/base-auth.schema";
 import { handleAsyncMiddleware } from "../utils/handle-async";
 import { handleMiddlewareError } from "../utils/handle-error";
 
@@ -40,4 +40,10 @@ router
     handleAsyncMiddleware(checkAuth),
     handleMiddlewareError
   )
-  .get("/refresh", handleAsyncMiddleware(refresh), handleMiddlewareError);
+  .get("/refresh", handleAsyncMiddleware(refresh), handleMiddlewareError)
+  .post(
+    "/forgot-password",
+    validateResource(forgotPasswordSchema),
+    handleAsyncMiddleware(forgotPassword),
+    handleMiddlewareError
+  );

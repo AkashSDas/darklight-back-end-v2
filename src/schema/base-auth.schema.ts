@@ -54,6 +54,15 @@ export const loginSchema = object({
   }),
 });
 
+/** Forgot password request's input schema */
+export const forgotPasswordSchema = object({
+  body: object({
+    email: string({ required_error: "Email is required" }).email(
+      "Invalid email"
+    ),
+  }),
+});
+
 export type SignupUserInputBody = TypeOf<typeof signupUserSchema>["body"];
 export type GetEmailVerificationLinkInputBody = TypeOf<
   typeof getEmailVerificationLinkSchema
@@ -62,3 +71,6 @@ export type ConfirmEmailInputParams = TypeOf<
   typeof confirmEmailSchema
 >["params"];
 export type LoginInputBody = TypeOf<typeof loginSchema>["body"];
+export type ForgotPasswordInputBody = TypeOf<
+  typeof forgotPasswordSchema
+>["body"];

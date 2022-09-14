@@ -3,7 +3,7 @@ import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 
 import logger from "../logger";
-import { ConfirmEmailInputParams, GetEmailVerificationLinkInputBody, LoginInputBody, SignupUserInputBody } from "../schema/base-auth.schema";
+import { ConfirmEmailInputParams, ForgotPasswordInputBody, GetEmailVerificationLinkInputBody, LoginInputBody, SignupUserInputBody } from "../schema/base-auth.schema";
 import { createUser, getUser, getUserWithFields } from "../services/user.service";
 import { sendResponseToClient } from "../utils/client-response";
 import { BaseApiError } from "../utils/handle-error";
@@ -233,7 +233,47 @@ export const refresh = async (req: Request, res: Response) => {
   }
 };
 
-export const forgotPassword = async () => {};
+export const forgotPassword = async (
+  req: Request<{}, {}, ForgotPasswordInputBody>,
+  res: Response
+) => {
+  // Check if the user exists OR not
+  const user = await getUser({ email: req.body.email });
+  if (!user) throw new BaseApiError(404, "User does not exists");
+
+  // Generating forgot password token
+  const token = user.generatePasswordResetToken();
+  await user.save({ validateModifiedOnly: true }); // saving token info to DB
+
+  // URL sent to user to reset user's password
+  const endpoint = `/api/auth/confirm-password-reset/${token}`;
+  const passwordResetURL = `${req.protocol}://${req.get("host")}${endpoint}`;
+
+  const opts: EmailOptions = {
+    to: user.email,
+    subject: "Reset your password",
+    text: "Reset your password",
+    html: `<p>Reset your password with this 🔗 <a href="${passwordResetURL}">link</a></p>`,
+  };
+
+  try {
+    // Sending email
+    await sendEmail(opts);
+    return sendResponseToClient(res, {
+      status: 200,
+      error: false,
+      msg: "Password reset instructions sent to your email",
+    });
+  } catch (err) {
+    // If password reset failed then make `passwordResetToken` and `passwordResetTokenExpiry`
+    // as undefined
+    user.passwordResetToken = undefined;
+    user.passwordResetTokenExpiry = undefined;
+    await user.save({ validateModifiedOnly: true });
+    logger.error(err);
+    throw new BaseApiError(500, "Something went wrong, Please try again");
+  }
+};
 
 export const resetPassword = async () => {};
 
