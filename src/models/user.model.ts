@@ -7,6 +7,7 @@ import validator from "validator";
 import { getModelForClass, modelOptions, post, pre, prop, Severity } from "@typegoose/typegoose";
 
 import { SocialAuthProvider, UserRole } from "../utils/user";
+import { SocialAuthProviderClass } from "./social-auth-provider.model";
 import { UserProfilePic } from "./user-profile-pic.model";
 
 /**
@@ -133,7 +134,7 @@ export class UserClass {
   /**
    * Array of sub-document
    */
-  @prop({ type: () => SocialAuthProvider })
+  @prop({ type: () => SocialAuthProviderClass })
   public socialAuthInfo?: SocialAuthProvider[];
 
   // ========================================
