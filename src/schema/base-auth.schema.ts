@@ -37,6 +37,23 @@ export const confirmEmailSchema = object({
   params: object({ token: string() }),
 });
 
+/** User login request's input schema */
+export const loginSchema = object({
+  body: object({
+    email: string({ required_error: "Email is required" }).email(
+      "Invalid email"
+    ),
+    password: string({ required_error: "Password is required" }).min(
+      6,
+      "Password must be more than 6 characters"
+    ),
+    confirmPassword: string({ required_error: "Confirm password is required" }),
+  }).refine((data) => data.password === data.confirmPassword, {
+    message: "Password and confirm password does not match",
+    path: ["confirmPassword"],
+  }),
+});
+
 export type SignupUserInputBody = TypeOf<typeof signupUserSchema>["body"];
 export type GetEmailVerificationLinkInputBody = TypeOf<
   typeof getEmailVerificationLinkSchema
@@ -44,3 +61,4 @@ export type GetEmailVerificationLinkInputBody = TypeOf<
 export type ConfirmEmailInputParams = TypeOf<
   typeof confirmEmailSchema
 >["params"];
+export type LoginInputBody = TypeOf<typeof loginSchema>["body"];

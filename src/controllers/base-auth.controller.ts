@@ -2,8 +2,8 @@ import crypto from "crypto";
 import { Request, Response } from "express";
 
 import logger from "../logger";
-import { ConfirmEmailInputParams, GetEmailVerificationLinkInputBody, SignupUserInputBody } from "../schema/base-auth.schema";
-import { createUser, getUser } from "../services/user.service";
+import { ConfirmEmailInputParams, GetEmailVerificationLinkInputBody, LoginInputBody, SignupUserInputBody } from "../schema/base-auth.schema";
+import { createUser, getUser, getUserWithFields } from "../services/user.service";
 import { sendResponseToClient } from "../utils/client-response";
 import { BaseApiError } from "../utils/handle-error";
 import { EmailOptions, sendEmail } from "../utils/send-email";
@@ -154,10 +154,44 @@ export const confirmEmail = async (
   });
 };
 
+export const login = async (
+  req: Request<{}, {}, LoginInputBody>,
+  res: Response
+) => {
+  const { email, password } = req.body;
+
+  // Check if user exists OR not. Also get `passwordDigest` too as it will be
+  // used while using `.checkPassword` method
+  const user = await getUserWithFields({ email }, "+passwordDigest");
+  if (!user) throw new BaseApiError(404, "User does not exists");
+
+  // Check if the password is correct
+  if (!(await user.checkPassword(password))) {
+    throw new BaseApiError(401, "Unauthorized, incorrect password");
+  }
+
+  const accessToken = user.generateAccessToken();
+  const refreshToken = user.generateRefreshToken();
+
+  res.cookie("jwt", refreshToken, {
+    httpOnly: true, // accessible only be web server
+    secure: process.env.NODE_ENV === "production", // only works in https, only accessible via https
+    maxAge: 1 * 60 * 1000, // 1 minutes, should match the expiresIn of the refresh token
+  });
+
+  user.passwordDigest = undefined; // remove the password digest from the response
+
+  // Sending the access token which contains userId and email to the client
+  sendResponseToClient(res, {
+    status: 200,
+    error: false,
+    msg: "Login successful",
+    data: { user, accessToken },
+  });
+};
+
 export const forgotPassword = async () => {};
 
 export const resetPassword = async () => {};
-
-export const login = async () => {};
 
 export const logout = async () => {};

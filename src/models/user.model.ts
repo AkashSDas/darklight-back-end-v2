@@ -1,5 +1,6 @@
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
+import jwt from "jsonwebtoken";
 import { SchemaTypes, Types } from "mongoose";
 import { nanoid } from "nanoid";
 import validator from "validator";
@@ -204,6 +205,34 @@ export class UserClass {
     this.emailVerificationTokenExpiry = new Date(Date.now() + 10 * 60 * 1000);
 
     return token;
+  }
+
+  generateAccessToken(): string {
+    const payload = {
+      id: this._id,
+      userId: this.userId,
+      username: this.username,
+      email: this.email,
+    };
+
+    // short duration token, new one is generated with valid refresh token
+    return jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, {
+      expiresIn: "30s",
+    });
+  }
+
+  generateRefreshToken(): string {
+    const payload = {
+      id: this._id,
+      userId: this.userId,
+      username: this.username,
+      email: this.email,
+    };
+
+    // long duration but does expires
+    return jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET, {
+      expiresIn: "1m",
+    });
   }
 
   // ========================================

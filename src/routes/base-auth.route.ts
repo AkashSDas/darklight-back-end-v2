@@ -1,8 +1,8 @@
 import { Router } from "express";
 
-import { confirmEmail, getEmailVerificationLink, signup } from "../controllers/base-auth.controller";
+import { confirmEmail, getEmailVerificationLink, login, signup } from "../controllers/base-auth.controller";
 import { validateResource } from "../middlewares/validate-resource.middleware";
-import { confirmEmailSchema, getEmailVerificationLinkSchema, signupUserSchema } from "../schema/base-auth.schema";
+import { confirmEmailSchema, getEmailVerificationLinkSchema, loginSchema, signupUserSchema } from "../schema/base-auth.schema";
 import { handleAsyncMiddleware } from "../utils/handle-async";
 import { handleMiddlewareError } from "../utils/handle-error";
 
@@ -25,5 +25,11 @@ router
     "/confirm-email/:token",
     validateResource(confirmEmailSchema),
     handleAsyncMiddleware(confirmEmail),
+    handleMiddlewareError
+  )
+  .post(
+    "/login",
+    validateResource(loginSchema),
+    handleAsyncMiddleware(login),
     handleMiddlewareError
   );
