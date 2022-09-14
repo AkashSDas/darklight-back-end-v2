@@ -309,4 +309,27 @@ export const resetPassword = async (
   });
 };
 
-export const logout = async () => {};
+/**
+ *
+ * @param req Express Request
+ * @param res Express Response
+ *
+ * @remarks
+ * The logout route is used to clear the refresh token from the request cookies,
+ * so you can't refresh you access token without logging in again but you can
+ * still be authenticated with the access token until it expires
+ */
+export const logout = async (req: Request, res: Response) => {
+  if (!req.cookies?.jwt) throw new BaseApiError(204, "No content");
+  res.clearCookie("jwt", {
+    httpOnly: true, // accessible only be web server
+    secure: process.env.NODE_ENV === "production", // only works in https, only accessible via https
+    sameSite: "none", // to allow cookies to be sent cross-origin
+  });
+
+  sendResponseToClient(res, {
+    status: 200,
+    error: false,
+    msg: "Logout successful",
+  });
+};

@@ -1,6 +1,6 @@
 import { Router } from "express";
 
-import { checkAuth, confirmEmail, forgotPassword, getEmailVerificationLink, login, refresh, resetPassword, signup } from "../controllers/base-auth.controller";
+import { checkAuth, confirmEmail, forgotPassword, getEmailVerificationLink, login, logout, refresh, resetPassword, signup } from "../controllers/base-auth.controller";
 import { validateResource } from "../middlewares/validate-resource.middleware";
 import { verifyJwt } from "../middlewares/verify-jwt";
 import { confirmEmailSchema, forgotPasswordSchema, getEmailVerificationLinkSchema, loginSchema, passwordResetSchema, signupUserSchema } from "../schema/base-auth.schema";
@@ -52,4 +52,5 @@ router
     validateResource(passwordResetSchema),
     handleAsyncMiddleware(resetPassword),
     handleMiddlewareError
-  );
+  )
+  .get("/logout", handleAsyncMiddleware(logout), handleMiddlewareError);
