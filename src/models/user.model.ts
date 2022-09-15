@@ -7,6 +7,7 @@ import validator from "validator";
 
 import { getModelForClass, modelOptions, post, pre, prop, Severity } from "@typegoose/typegoose";
 
+import { BaseApiError } from "../utils/handle-error";
 import { SocialAuthProvider, UserRole } from "../utils/user";
 import { SocialAuthProviderClass } from "./social-auth-provider.model";
 import { UserProfilePic } from "./user-profile-pic.model";
@@ -29,7 +30,7 @@ import { UserProfilePic } from "./user-profile-pic.model";
 @post<UserClass>("save", function (error, user, next) {
   // Handle error for trying to create user with duplicate email
   if (error.name === "MongoServerError" && error.code === 11000) {
-    next(new Error(`User with email ${user.email} already exists`));
+    next(new BaseApiError(400, `User with email ${user.email} already exists`));
   }
   next();
 })
