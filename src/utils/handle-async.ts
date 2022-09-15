@@ -32,7 +32,7 @@ export const handleAsync = async (
     return [null, result];
   } catch (err) {
     if (logError) logger.error(errorId ?? "", err);
-    return [null, err];
+    return [err, null];
   }
 };
 
