@@ -53,4 +53,4 @@ router
     handleAsyncMiddleware(resetPassword),
     handleMiddlewareError
   )
-  .get("/logout", handleAsyncMiddleware(logout), handleMiddlewareError);
+  .post("/logout", handleAsyncMiddleware(logout), handleMiddlewareError);
