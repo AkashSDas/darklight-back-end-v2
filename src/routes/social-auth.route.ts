@@ -5,6 +5,7 @@ import {
   getLoggedInUser,
   signupWithGoogle,
   signupWithGoogleRedirect,
+  updateUsername,
 } from "../controllers/social-auth.controller";
 import { verifyAuth } from "../middlewares/verify-auth";
 import { handleAsyncMiddleware } from "../utils/handle-async";
@@ -30,7 +31,12 @@ router
       failureMessage: "Cannot signup to Google, Please try again",
       successRedirect: "http://localhost:3000/auth/signup/success",
       failureRedirect: "http://localhost:3000/auth/signup/error",
-      session: false,
     }),
     signupWithGoogleRedirect
+  )
+  .post(
+    "/update-username",
+    handleAsyncMiddleware(verifyAuth),
+    handleAsyncMiddleware(updateUsername),
+    handleMiddlewareError
   );

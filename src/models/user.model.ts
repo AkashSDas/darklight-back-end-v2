@@ -5,11 +5,17 @@ import { SchemaTypes, Types } from "mongoose";
 import { nanoid } from "nanoid";
 import validator from "validator";
 
-import { getModelForClass, modelOptions, post, pre, prop, Severity } from "@typegoose/typegoose";
+import {
+  getModelForClass,
+  modelOptions,
+  post,
+  pre,
+  prop,
+  Severity,
+} from "@typegoose/typegoose";
 
 import { BaseApiError } from "../utils/handle-error";
 import { SocialAuthProvider, UserRole } from "../utils/user";
-import { SocialAuthProviderClass } from "./social-auth-provider.model";
 import { UserProfilePic } from "./user-profile-pic.model";
 
 /**
@@ -66,11 +72,11 @@ export class UserClass {
     type: SchemaTypes.String,
     trim: true,
     unique: true,
-    required: [true, "Username is required"],
+    // required: [true, "Username is required"],
     maxlength: [120, "Username must be less than 120 characters"],
     minlength: [3, "Username should be more than 3 characters"],
   })
-  public username: string;
+  public username?: string;
 
   @prop({
     type: SchemaTypes.String,
@@ -117,9 +123,9 @@ export class UserClass {
   @prop({
     type: SchemaTypes.String,
     select: false,
-    required: [true, "Password is required"],
+    // required: [true, "Password is required"],
   })
-  public passwordDigest: string;
+  public passwordDigest?: string;
 
   /**
    * It can have a value of null
@@ -136,8 +142,8 @@ export class UserClass {
   /**
    * Array of sub-document
    */
-  @prop({ type: () => SocialAuthProviderClass })
-  public socialAuthInfo?: SocialAuthProvider[];
+  @prop({ type: () => SchemaTypes.Array })
+  public socialAuthInfo?: { id: string; provider: SocialAuthProvider }[];
 
   // ========================================
   // INSTANCE METHODS
