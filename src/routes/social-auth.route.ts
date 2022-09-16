@@ -30,6 +30,7 @@ router
       failureMessage: "Cannot signup to Google, Please try again",
       successRedirect: "http://localhost:3000/auth/signup/success",
       failureRedirect: "http://localhost:3000/auth/signup/error",
+      session: false,
     }),
     signupWithGoogleRedirect
   );

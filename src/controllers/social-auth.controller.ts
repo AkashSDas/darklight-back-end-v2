@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
+import logger from "../logger";
 
 import { sendResponseToClient } from "../utils/client-response";
+import { BaseApiError } from "../utils/handle-error";
 
 export const getLoggedInUser = async (req: Request, res: Response) => {
   sendResponseToClient(res, {
@@ -11,18 +13,5 @@ export const getLoggedInUser = async (req: Request, res: Response) => {
   });
 };
 
-export const signupWithGoogle = (req: Request, res: Response) => {
-  sendResponseToClient(res, {
-    status: 200,
-    error: false,
-    msg: "Signup with Google is initialized",
-  });
-};
-
-export const signupWithGoogleRedirect = (req: Request, res: Response) => {
-  sendResponseToClient(res, {
-    status: 200,
-    error: false,
-    msg: "Signup with Google is redirect",
-  });
-};
+export const signupWithGoogle = () => {};
+export const signupWithGoogleRedirect = () => {};
