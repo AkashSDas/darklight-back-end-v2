@@ -176,8 +176,10 @@ export const login = async (
 
   res.cookie("jwt", refreshToken, {
     httpOnly: true, // accessible only be web server
-    secure: process.env.NODE_ENV === "production", // only works in https, only accessible via https
+    // secure: process.env.NODE_ENV === "production", // only works in https, only accessible via https
+    secure: true,
     maxAge: 1 * 60 * 1000, // 1 minutes, should match the expiresIn of the refresh token
+    sameSite: "none",
   });
 
   user.passwordDigest = undefined; // remove the password digest from the response
@@ -323,7 +325,8 @@ export const logout = async (req: Request, res: Response) => {
   if (!req.cookies?.jwt) throw new BaseApiError(204, "No content");
   res.clearCookie("jwt", {
     httpOnly: true, // accessible only be web server
-    secure: process.env.NODE_ENV === "production", // only works in https, only accessible via https
+    // secure: process.env.NODE_ENV === "production", // only works in https, only accessible via https
+    secure: true,
     sameSite: "none", // to allow cookies to be sent cross-origin
   });
 
