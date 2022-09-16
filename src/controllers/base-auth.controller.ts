@@ -3,8 +3,8 @@ import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 
 import logger from "../logger";
-import { ConfirmEmailInputParams, ForgotPasswordInputBody, GetEmailVerificationLinkInputBody, LoginInputBody, PasswordResetInput, SignupUserInputBody } from "../schema/base-auth.schema";
-import { createUser, getUser, getUserWithFields } from "../services/user.service";
+import { ConfirmEmailInputParams, EmailInputParams, ForgotPasswordInputBody, GetEmailVerificationLinkInputBody, LoginInputBody, PasswordResetInput, SignupUserInputBody, UsernameInputParams } from "../schema/base-auth.schema";
+import { createUser, getUser, getUserWithFields, userExists } from "../services/user.service";
 import { sendResponseToClient } from "../utils/client-response";
 import { BaseApiError } from "../utils/handle-error";
 import { EmailOptions, sendEmail } from "../utils/send-email";
@@ -335,5 +335,31 @@ export const logout = async (req: Request, res: Response) => {
     status: 200,
     error: false,
     msg: "Logout successful",
+  });
+};
+
+export const usernameAvailable = async (
+  req: Request<UsernameInputParams>,
+  res: Response
+) => {
+  const exists = await userExists({ username: req.params.username });
+  sendResponseToClient(res, {
+    status: 200,
+    error: false,
+    msg: "Username availability",
+    data: { available: exists === 0 },
+  });
+};
+
+export const emailAvailable = async (
+  req: Request<EmailInputParams>,
+  res: Response
+) => {
+  const exists = await userExists({ email: req.params.email });
+  sendResponseToClient(res, {
+    status: 200,
+    error: false,
+    msg: "Username availability",
+    data: { available: exists === 0 },
   });
 };

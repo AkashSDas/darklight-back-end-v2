@@ -77,6 +77,24 @@ export const passwordResetSchema = object({
   }),
 });
 
+/** Username available request's input schema */
+export const usernameAvailableSchema = object({
+  params: object({
+    username: string({ required_error: "Username is required" })
+      .max(120, "Username must be less than 120 characters")
+      .min(3, "Username should be more than 3 characters"),
+  }),
+});
+
+/** Email available request's input schema */
+export const emailAvailableSchema = object({
+  params: object({
+    email: string({ required_error: "Email is required" }).email(
+      "Invalid email address"
+    ),
+  }),
+});
+
 export type SignupUserInputBody = TypeOf<typeof signupUserSchema>["body"];
 export type GetEmailVerificationLinkInputBody = TypeOf<
   typeof getEmailVerificationLinkSchema
@@ -89,3 +107,7 @@ export type ForgotPasswordInputBody = TypeOf<
   typeof forgotPasswordSchema
 >["body"];
 export type PasswordResetInput = TypeOf<typeof passwordResetSchema>;
+export type UsernameInputParams = TypeOf<
+  typeof usernameAvailableSchema
+>["params"];
+export type EmailInputParams = TypeOf<typeof emailAvailableSchema>["params"];
