@@ -57,14 +57,14 @@ export const handleMiddlewareError = (
   next: NextFunction
 ): void => {
   if (err instanceof BaseApiError) {
-    sendResponseToClient(res, {
+    return sendResponseToClient(res, {
       status: err.status,
       error: true,
       msg: err.msg,
     });
   }
 
-  logger.error(err);
+  logger.error(`BaseApiError: ${err}`);
   const status = (err as any)?.status || 400;
   const msg = (err as any)?.msg || "Something went wrong, Please try again";
   sendResponseToClient(res, { status, msg, error: true });

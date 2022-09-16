@@ -1,11 +1,11 @@
 import { config } from "dotenv";
 
+// Load env variables
+if (process.env.NODE_ENV !== "production") config();
+
 import { app } from "./api";
 import { connectToMongoDB } from "./config/db";
 import logger from "./logger";
-
-// Load env variables
-if (process.env.NODE_ENV !== "production") config();
 
 // Connect to MongoDB
 connectToMongoDB();
