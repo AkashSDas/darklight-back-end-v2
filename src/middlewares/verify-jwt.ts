@@ -1,6 +1,5 @@
 import jwt, { JwtPayload } from "jsonwebtoken";
 
-import logger from "../logger";
 import { getUser } from "../services/user.service";
 import { BaseApiError } from "../utils/handle-error";
 import { AsyncMiddleware } from "../utils/types";
@@ -24,10 +23,16 @@ export const verifyJwt: AsyncMiddleware = async (req, res, next) => {
     req.user = user;
     next();
   } catch (err) {
-    logger.error(err);
     if (err instanceof jwt.TokenExpiredError) {
       throw new BaseApiError(401, "Session expired, Please login again");
     }
+
+    // jwt malformed and also jwt token expired. There keeping expired error on top
+    // to give more descriptive error message
+    if (err instanceof jwt.JsonWebTokenError) {
+      throw new BaseApiError(401, "Invalid JWT token");
+    }
+
     throw new BaseApiError(500, "Something went wrong, Please try agian");
   }
 };
