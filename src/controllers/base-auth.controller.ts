@@ -248,14 +248,15 @@ export const forgotPassword = async (
   await user.save({ validateModifiedOnly: true }); // saving token info to DB
 
   // URL sent to user to reset user's password
-  const endpoint = `/api/auth/confirm-password-reset/${token}`;
-  const passwordResetURL = `${req.protocol}://${req.get("host")}${endpoint}`;
+  // const endpoint = `/api/auth/confirm-password-reset/${token}`;
+  // const passwordResetURL = `${req.protocol}://${req.get("host")}${endpoint}`;
+  const frontEndURL = `${process.env.FRONTEND_BASE_URL}/auth/password-reset/${token}`;
 
   const opts: EmailOptions = {
     to: user.email,
     subject: "Reset your password",
     text: "Reset your password",
-    html: `<p>Reset your password with this 🔗 <a href="${passwordResetURL}">link</a></p>`,
+    html: `<p>Reset your password with this 🔗 <a href="${frontEndURL}">link</a></p>`,
   };
 
   try {
