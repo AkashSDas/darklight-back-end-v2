@@ -6,14 +6,17 @@ import {
 } from "../controllers/user.controller";
 import { handleMiddlewareError } from "../utils/handle-error";
 import { validateResource } from "../middlewares/validate-resource.middleware";
-import { checkEmailAvaiableSchema } from "../schema/user.schema";
+import {
+  checkEmailAvaiableSchema,
+  checkUsernameAvaiableSchema,
+} from "../schema/user.schema";
 
 export const router = Router();
 
 router
   .get(
     "/check-username-available/:username",
-    validateResource(checkEmailAvaiableSchema),
+    validateResource(checkUsernameAvaiableSchema),
     handleAsyncMiddleware(checkUsernameAvaiable),
     handleMiddlewareError
   )
