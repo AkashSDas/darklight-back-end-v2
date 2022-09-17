@@ -8,7 +8,7 @@ import session from "express-session";
 import { corsOptions } from "./config/cors-opts";
 import { sendResponseToClient } from "./utils/client-response";
 
-import "./passport/google.strategy";
+import "./passport/google-signup.strategy";
 
 /**
  * @description Express app

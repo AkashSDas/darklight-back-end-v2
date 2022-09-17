@@ -24,14 +24,14 @@ router
   )
   .get(
     "/google",
-    passport.authenticate("google", { scope: ["profile", "email"] }),
+    passport.authenticate("google-signup", { scope: ["profile", "email"] }),
     signupWithGoogle
   )
   .get(
     "/google/redirect",
-    passport.authenticate("google", {
+    passport.authenticate("google-signup", {
       failureMessage: "Cannot signup to Google, Please try again",
-      successRedirect: "http://localhost:3000/auth/signup/success",
+      successRedirect: "http://localhost:3000/auth/signup",
       failureRedirect: "http://localhost:3000/auth/signup/error",
     }),
     signupWithGoogleRedirect

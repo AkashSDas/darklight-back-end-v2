@@ -17,7 +17,7 @@ passport.deserializeUser((_id, done) => {
   });
 });
 
-export const googleStrategy = () => {
+export const googleSignupStrategy = () => {
   const verify = async (
     req: Request,
     accessToken: string,
@@ -62,4 +62,4 @@ export const googleStrategy = () => {
   );
 };
 
-passport.use(googleStrategy());
+passport.use("google-signup", googleSignupStrategy());
