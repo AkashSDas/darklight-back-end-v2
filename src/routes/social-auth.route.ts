@@ -7,6 +7,7 @@ import {
   signupWithGoogleRedirect,
   addPostOAuthUserInfo,
   socialLogout,
+  cancelSocialAuth,
 } from "../controllers/social-auth.controller";
 import { verifyAuth } from "../middlewares/verify-auth";
 import { handleAsyncMiddleware } from "../utils/handle-async";
@@ -45,5 +46,11 @@ router
     "/logout",
     handleAsyncMiddleware(verifyAuth),
     handleAsyncMiddleware(socialLogout),
+    handleMiddlewareError
+  )
+  .post(
+    "/cancel-socail-auth",
+    handleAsyncMiddleware(verifyAuth),
+    handleAsyncMiddleware(cancelSocialAuth),
     handleMiddlewareError
   );

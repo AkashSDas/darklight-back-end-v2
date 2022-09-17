@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { AddPostOAuthUserInfoSchemaInputBody } from "../schema/social-auth.schema";
-import { updateUser } from "../services/user.service";
+import { deleteUser, updateUser } from "../services/user.service";
 
 import { sendResponseToClient } from "../utils/client-response";
 
@@ -40,10 +40,17 @@ export const socialLogout = async (req: Request, res: Response) => {
         msg: "User logged out",
       });
     });
+};
 
-  return sendResponseToClient(res, {
-    status: 200,
-    error: false,
-    msg: "User logged out",
-  });
+export const cancelSocialAuth = async (req: Request, res: Response) => {
+  await deleteUser({ _id: req.user?._id });
+
+  req.logOut &&
+    req.logOut(() => {
+      return sendResponseToClient(res, {
+        status: 200,
+        error: false,
+        msg: "User social auth info removed",
+      });
+    });
 };

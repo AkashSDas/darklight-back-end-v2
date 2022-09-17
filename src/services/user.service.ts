@@ -59,3 +59,7 @@ export const getUserWithFields = async (
 ) => {
   return await UserModel.findOne(filter).select(`${select} -__v`).exec();
 };
+
+export const deleteUser = async (filter: FilterQuery<UserClass>) => {
+  return await UserModel.findOneAndDelete(filter).exec();
+};
