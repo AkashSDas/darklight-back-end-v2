@@ -8,6 +8,8 @@ import {
   addPostOAuthUserInfo,
   socialLogout,
   cancelSocialAuth,
+  loginWithGoogle,
+  loginWithGoogleRedirect,
 } from "../controllers/social-auth.controller";
 import { verifyAuth } from "../middlewares/verify-auth";
 import { handleAsyncMiddleware } from "../utils/handle-async";
@@ -53,4 +55,19 @@ router
     handleAsyncMiddleware(verifyAuth),
     handleAsyncMiddleware(cancelSocialAuth),
     handleMiddlewareError
+  )
+  .get(
+    "/google-login",
+    passport.authenticate("google-login", { scope: ["profile", "email"] }),
+    loginWithGoogle
+  )
+  .get(
+    "/google-login/redirect",
+    passport.authenticate("google-login", {
+      failureMessage: "Cannot signup to Google, Please try again",
+      successRedirect: "http://localhost:3000/",
+      failureRedirect:
+        "http://localhost:3000/auth/login?error=incomplete-signup-or-no-user",
+    }),
+    loginWithGoogleRedirect
   );

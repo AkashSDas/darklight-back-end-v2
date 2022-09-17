@@ -54,3 +54,6 @@ export const cancelSocialAuth = async (req: Request, res: Response) => {
       });
     });
 };
+
+export const loginWithGoogle = () => {};
+export const loginWithGoogleRedirect = () => {};

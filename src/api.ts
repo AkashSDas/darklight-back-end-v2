@@ -9,6 +9,7 @@ import { corsOptions } from "./config/cors-opts";
 import { sendResponseToClient } from "./utils/client-response";
 
 import "./passport/google-signup.strategy";
+import "./passport/google-login.strategy";
 
 /**
  * @description Express app
