@@ -30,3 +30,20 @@ export const addPostOAuthUserInfo = async (
     data: { username, email, fullName },
   });
 };
+
+export const socialLogout = async (req: Request, res: Response) => {
+  req.logOut &&
+    req.logOut(() => {
+      return sendResponseToClient(res, {
+        status: 200,
+        error: false,
+        msg: "User logged out",
+      });
+    });
+
+  return sendResponseToClient(res, {
+    status: 200,
+    error: false,
+    msg: "User logged out",
+  });
+};
