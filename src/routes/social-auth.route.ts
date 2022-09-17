@@ -5,7 +5,7 @@ import {
   getLoggedInUser,
   signupWithGoogle,
   signupWithGoogleRedirect,
-  updateUsername,
+  addPostOAuthUserInfo,
 } from "../controllers/social-auth.controller";
 import { verifyAuth } from "../middlewares/verify-auth";
 import { handleAsyncMiddleware } from "../utils/handle-async";
@@ -35,8 +35,8 @@ router
     signupWithGoogleRedirect
   )
   .post(
-    "/update-username",
+    "/post-social-auth",
     handleAsyncMiddleware(verifyAuth),
-    handleAsyncMiddleware(updateUsername),
+    handleAsyncMiddleware(addPostOAuthUserInfo),
     handleMiddlewareError
   );

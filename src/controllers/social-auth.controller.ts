@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { UpdateUsernameInputBody } from "../schema/social-auth.schema";
+import { AddPostOAuthUserInfoSchemaInputBody } from "../schema/social-auth.schema";
 import { updateUser } from "../services/user.service";
 
 import { sendResponseToClient } from "../utils/client-response";
@@ -16,16 +16,17 @@ export const getLoggedInUser = async (req: Request, res: Response) => {
 export const signupWithGoogle = () => {};
 export const signupWithGoogleRedirect = () => {};
 
-export const updateUsername = async (
-  req: Request<{}, {}, UpdateUsernameInputBody>,
+export const addPostOAuthUserInfo = async (
+  req: Request<{}, {}, AddPostOAuthUserInfoSchemaInputBody>,
   res: Response
 ) => {
-  const { username } = req.body;
-  await updateUser({ _id: req.user._id }, { username });
+  const { username, email, fullName } = req.body;
+  await updateUser({ _id: req.user._id }, { username, email, fullName });
 
   sendResponseToClient(res, {
     status: 200,
     error: false,
-    msg: "Username updated",
+    msg: "User info updated",
+    data: { username, email, fullName },
   });
 };
