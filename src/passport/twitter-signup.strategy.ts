@@ -52,7 +52,6 @@ export const twitterSignupStrategy = () => {
     return next(err, newUser);
   };
 
-  // Type 'true' is not assignable to type 'false' as StrategyOptions.passReqToCallback?: false
   return new Strategy(
     {
       consumerKey: process.env.TWITTER_OAUTH_CLIENT_KEY,

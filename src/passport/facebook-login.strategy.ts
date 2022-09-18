@@ -3,6 +3,7 @@ import { Profile, Strategy } from "passport-facebook";
 
 import { UserModel } from "../models/user.model";
 import { getUser } from "../services/user.service";
+import { SocialAuthProvider } from "../utils/user";
 
 passport.serializeUser((user, done) => {
   done(null, (user as any)._id);
@@ -23,7 +24,9 @@ export const facebookLoginStrategy = () => {
   ) => {
     const { id } = profile._json;
     const user = await getUser({
-      socialAuthInfo: { $elemMatch: { id, provider: "facebook" } },
+      socialAuthInfo: {
+        $elemMatch: { id, provider: SocialAuthProvider.FACEBOOK },
+      },
     });
 
     if (user && (!user.username || !user.email || !user.fullName)) {
@@ -33,7 +36,6 @@ export const facebookLoginStrategy = () => {
     return next(null, user); // Login the user
   };
 
-  // Type 'true' is not assignable to type 'false' as StrategyOptions.passReqToCallback?: false
   return new Strategy(
     {
       clientID: process.env.FACEBOOK_OAUTH_CLIENT_ID,

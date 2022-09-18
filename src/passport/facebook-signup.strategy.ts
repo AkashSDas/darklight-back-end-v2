@@ -50,7 +50,6 @@ export const facebookSignupStrategy = () => {
     return next(err, newUser);
   };
 
-  // Type 'true' is not assignable to type 'false' as StrategyOptions.passReqToCallback?: false
   return new Strategy(
     {
       clientID: process.env.FACEBOOK_OAUTH_CLIENT_ID,

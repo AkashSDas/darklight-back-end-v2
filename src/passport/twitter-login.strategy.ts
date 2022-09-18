@@ -3,6 +3,7 @@ import { Strategy, Profile } from "passport-twitter";
 
 import { UserModel } from "../models/user.model";
 import { getUser } from "../services/user.service";
+import { SocialAuthProvider } from "../utils/user";
 
 passport.serializeUser((user, done) => {
   done(null, (user as any)._id);
@@ -23,7 +24,9 @@ export const twitterLoginStrategy = () => {
   ) => {
     const { id } = profile._json;
     const user = await getUser({
-      socialAuthInfo: { $elemMatch: { id, provider: "twitter" } },
+      socialAuthInfo: {
+        $elemMatch: { id, provider: SocialAuthProvider.TWITTER },
+      },
     });
 
     if (user && (!user.username || !user.email || !user.fullName)) {
