@@ -10,6 +10,10 @@ import {
   cancelSocialAuth,
   loginWithGoogle,
   loginWithGoogleRedirect,
+  signupWithFacebookRedirect,
+  signupWithFacebook,
+  loginWithFacebookRedirect,
+  loginWithFacebook,
 } from "../controllers/social-auth.controller";
 import { verifyAuth } from "../middlewares/verify-auth";
 import { handleAsyncMiddleware } from "../utils/handle-async";
@@ -70,4 +74,33 @@ router
         "http://localhost:3000/auth/login?error=incomplete-signup-or-no-user",
     }),
     loginWithGoogleRedirect
+  )
+  .get(
+    "/facebook",
+    passport.authenticate("facebook-signup"),
+    signupWithFacebook
+  )
+  .get(
+    "/facebook/redirect",
+    passport.authenticate("facebook-signup", {
+      failureMessage: "Cannot signup to Facebook, Please try again",
+      successRedirect: "http://localhost:3000/auth/signup",
+      failureRedirect: "http://localhost:3000/auth/signup/error",
+    }),
+    signupWithFacebookRedirect
+  )
+  .get(
+    "/facebook-login",
+    passport.authenticate("facebook-login"),
+    loginWithFacebook
+  )
+  .get(
+    "/facebook-login/redirect",
+    passport.authenticate("facebook-login", {
+      failureMessage: "Cannot signup to Facebook, Please try again",
+      successRedirect: "http://localhost:3000/",
+      failureRedirect:
+        "http://localhost:3000/auth/login?error=incomplete-signup-or-no-user",
+    }),
+    loginWithFacebookRedirect
   );

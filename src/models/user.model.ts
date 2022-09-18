@@ -81,10 +81,10 @@ export class UserClass {
   @prop({
     type: SchemaTypes.String,
     unique: true,
-    required: [true, "Email is required"],
+    // required: [true, "Email is required"],
     validate: [validator.isEmail, "Email is invalid"],
   })
-  public email: string;
+  public email?: string;
 
   @prop({
     type: SchemaTypes.Boolean,

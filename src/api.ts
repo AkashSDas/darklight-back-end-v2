@@ -10,6 +10,8 @@ import { sendResponseToClient } from "./utils/client-response";
 
 import "./passport/google-signup.strategy";
 import "./passport/google-login.strategy";
+import "./passport/facebook-signup.strategy";
+import "./passport/facebook-login.strategy";
 
 /**
  * @description Express app

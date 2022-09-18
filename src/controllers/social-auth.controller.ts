@@ -57,3 +57,9 @@ export const cancelSocialAuth = async (req: Request, res: Response) => {
 
 export const loginWithGoogle = () => {};
 export const loginWithGoogleRedirect = () => {};
+
+export const signupWithFacebook = () => {};
+export const signupWithFacebookRedirect = () => {};
+
+export const loginWithFacebook = () => {};
+export const loginWithFacebookRedirect = () => {};
