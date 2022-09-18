@@ -3,8 +3,22 @@ import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 
 import logger from "../logger";
-import { ConfirmEmailInputParams, EmailInputParams, ForgotPasswordInputBody, GetEmailVerificationLinkInputBody, LoginInputBody, PasswordResetInput, SignupUserInputBody, UsernameInputParams } from "../schema/base-auth.schema";
-import { createUser, getUser, getUserWithFields, userExists } from "../services/user.service";
+import {
+  ConfirmEmailInputParams,
+  EmailInputParams,
+  ForgotPasswordInputBody,
+  GetEmailVerificationLinkInputBody,
+  LoginInputBody,
+  PasswordResetInput,
+  SignupUserInputBody,
+  UsernameInputParams,
+} from "../schema/base-auth.schema";
+import {
+  createUser,
+  getUser,
+  getUserWithFields,
+  userExists,
+} from "../services/user.service";
 import { sendResponseToClient } from "../utils/client-response";
 import { BaseApiError } from "../utils/handle-error";
 import { EmailOptions, sendEmail } from "../utils/send-email";
@@ -194,7 +208,6 @@ export const login = async (
 };
 
 export const checkAuth = async (req: Request, res: Response) => {
-  logger.info(req.user);
   sendResponseToClient(res, {
     status: 200,
     error: false,
