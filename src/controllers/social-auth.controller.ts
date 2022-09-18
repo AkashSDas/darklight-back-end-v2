@@ -63,3 +63,9 @@ export const signupWithFacebookRedirect = () => {};
 
 export const loginWithFacebook = () => {};
 export const loginWithFacebookRedirect = () => {};
+
+export const signupWithTwitter = () => {};
+export const signupWithTwitterRedirect = () => {};
+
+export const loginWithTwitter = () => {};
+export const loginWithTwitterRedirect = () => {};

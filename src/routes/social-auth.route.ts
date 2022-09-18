@@ -14,6 +14,10 @@ import {
   signupWithFacebook,
   loginWithFacebookRedirect,
   loginWithFacebook,
+  signupWithTwitter,
+  signupWithTwitterRedirect,
+  loginWithTwitter,
+  loginWithTwitterRedirect,
 } from "../controllers/social-auth.controller";
 import { verifyAuth } from "../middlewares/verify-auth";
 import { handleAsyncMiddleware } from "../utils/handle-async";
@@ -103,4 +107,29 @@ router
         "http://localhost:3000/auth/login?error=incomplete-signup-or-no-user",
     }),
     loginWithFacebookRedirect
+  )
+  .get("/twitter", passport.authenticate("twitter-signup"), signupWithTwitter)
+  .get(
+    "/twitter/redirect",
+    passport.authenticate("twitter-signup", {
+      failureMessage: "Cannot signup to Twitter, Please try again",
+      successRedirect: "http://localhost:3000/auth/signup",
+      failureRedirect: "http://localhost:3000/auth/signup/error",
+    }),
+    signupWithTwitterRedirect
+  )
+  .get(
+    "/twitter-login",
+    passport.authenticate("twitter-login"),
+    loginWithTwitter
+  )
+  .get(
+    "/twitter-login/redirect",
+    passport.authenticate("twitter-login", {
+      failureMessage: "Cannot signup to Twitter, Please try again",
+      successRedirect: "http://localhost:3000/",
+      failureRedirect:
+        "http://localhost:3000/auth/login?error=incomplete-signup-or-no-user",
+    }),
+    loginWithTwitterRedirect
   );

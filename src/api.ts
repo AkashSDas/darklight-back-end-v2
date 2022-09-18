@@ -12,6 +12,8 @@ import "./passport/google-signup.strategy";
 import "./passport/google-login.strategy";
 import "./passport/facebook-signup.strategy";
 import "./passport/facebook-login.strategy";
+import "./passport/twitter-signup.strategy";
+import "./passport/twitter-login.strategy";
 
 /**
  * @description Express app
