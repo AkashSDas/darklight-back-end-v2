@@ -17,9 +17,21 @@ export const checkEmailAvaiableSchema = object({
   }),
 });
 
+export const signupForInstructorSchema = object({
+  params: object({
+    userId: string({ required_error: "User ID is required" }).length(
+      12, // check user model for this
+      "Invalid user id"
+    ),
+  }),
+});
+
 export type CheckUsernameAvaiableInputParams = TypeOf<
   typeof checkUsernameAvaiableSchema
 >["params"];
 export type CheckEmailAvaiableInputParams = TypeOf<
   typeof checkEmailAvaiableSchema
+>["params"];
+export type SignupForInstructorInputParam = TypeOf<
+  typeof signupForInstructorSchema
 >["params"];

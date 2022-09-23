@@ -2,9 +2,11 @@ import { Request, Response } from "express";
 import {
   CheckEmailAvaiableInputParams,
   CheckUsernameAvaiableInputParams,
+  SignupForInstructorInputParam,
 } from "../schema/user.schema";
-import { userExists } from "../services/user.service";
+import { getUser, userExists } from "../services/user.service";
 import { sendResponseToClient } from "../utils/client-response";
+import { UserRole } from "../utils/user";
 
 /**
  * Check if the username is available or not
@@ -43,5 +45,40 @@ export const checkEmailAvaiable = async (
     error: false,
     msg: "Email availability",
     data: { available: exists === 0 },
+  });
+};
+
+/**
+ * This userId is the 'user.userId` and not the `user._id`
+ */
+export const signupForInstructor = async (
+  req: Request<SignupForInstructorInputParam>,
+  res: Response
+) => {
+  const userId = req.params.userId;
+  const user = await getUser({ userId: userId });
+  if (!user) {
+    return sendResponseToClient(res, {
+      status: 404,
+      error: true,
+      msg: "User not found",
+    });
+  }
+
+  if (user.roles.filter((role) => role === "instructor").length > 0) {
+    return sendResponseToClient(res, {
+      status: 400,
+      error: true,
+      msg: "User is already an instructor",
+    });
+  }
+
+  user.roles.push(UserRole.INSTRUCTOR);
+  await user.save();
+
+  sendResponseToClient(res, {
+    status: 200,
+    error: false,
+    msg: "Successfully signed up for instructor",
   });
 };
