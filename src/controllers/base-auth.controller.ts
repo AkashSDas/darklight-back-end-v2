@@ -191,7 +191,7 @@ export const login = async (
   res.cookie("jwt", refreshToken, {
     httpOnly: true, // accessible only be web server
     // secure: process.env.NODE_ENV === "production", // only works in https, only accessible via https
-    secure: true,
+    // secure: true,
     maxAge: 1 * 60 * 1000, // 1 minutes, should match the expiresIn of the refresh token
     sameSite: "none",
   });
