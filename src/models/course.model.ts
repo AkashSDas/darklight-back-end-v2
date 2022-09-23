@@ -6,7 +6,7 @@ import { UserClass } from "./user.model";
 export enum CourseLevel {
   BEGINNER = "beginner",
   INTERMEDIATE = "intermediate",
-  ADVANCED = "advanced",
+  ADVANCED = "advance",
 }
 
 export enum CourseStage {
@@ -33,13 +33,15 @@ export class CourseClass {
 
   @prop({
     ref: () => UserClass,
+    type: () => SchemaTypes.Array,
     required: [true, "Course author is required"],
   })
   instructors: Ref<UserClass>[];
 
   @prop({
-    type: SchemaTypes.String,
+    type: () => SchemaTypes.Array,
     required: [true, "Tags for course are required"],
+    default: [],
   })
   tags: string[];
 
@@ -54,6 +56,7 @@ export class CourseClass {
     type: SchemaTypes.String,
     required: [true, "Course stage is required"],
     enum: CourseStage,
+    default: CourseStage.DRAFT,
   })
   stage: CourseStage;
 
@@ -61,6 +64,7 @@ export class CourseClass {
     type: SchemaTypes.Number,
     required: [true, "Course price is required"],
     min: [0, "Course price must be greater than 0"],
+    default: 0,
   })
   price: number;
 
