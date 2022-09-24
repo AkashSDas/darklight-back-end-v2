@@ -4,11 +4,15 @@ import { config } from "dotenv";
 if (process.env.NODE_ENV !== "production") config();
 
 import { app } from "./api";
+import { cloudinaryConfig } from "./config/cloudinary";
 import { connectToMongoDB } from "./config/db";
 import logger from "./logger";
 
 // Connect to MongoDB
 connectToMongoDB();
+
+// Connect to cloudinary
+cloudinaryConfig();
 
 // Start the server
 const port = process.env.PORT || 8002;

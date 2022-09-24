@@ -4,6 +4,7 @@ import express from "express";
 import morgan from "morgan";
 import passport from "passport";
 import session from "express-session";
+import fileUpload from "express-fileupload";
 
 import { corsOptions } from "./config/cors-opts";
 import { sendResponseToClient } from "./utils/client-response";
@@ -35,6 +36,11 @@ app.use(
   })
 );
 app.use(passport.session());
+
+// If the useTempFiles & tempFileDir doesn't work then you've to use
+// readDataURL for file in frontend. Packages like multer, formidable, etc...
+// hides these complexities
+app.use(fileUpload({ useTempFiles: true, tempFileDir: "/fileupload-tmp/" }));
 
 // Routes
 
