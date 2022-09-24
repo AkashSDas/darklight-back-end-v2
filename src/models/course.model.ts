@@ -1,5 +1,6 @@
 import { getModelForClass, prop, Ref, Severity } from "@typegoose/typegoose";
 import { SchemaTypes, Types } from "mongoose";
+import { nanoid } from "nanoid";
 import { CoverImageClass } from "./image.model";
 import { UserClass } from "./user.model";
 
@@ -15,6 +16,16 @@ export enum CourseStage {
 }
 
 export class CourseClass {
+  @prop({
+    type: SchemaTypes.String,
+    unique: true,
+    immutable: true,
+    default: () => nanoid(12),
+    required: [true, "Id is required"],
+    maxlength: [12, "Id must be less than 12 characters"],
+  })
+  public courseId: string;
+
   @prop({
     type: String,
     required: [true, "Course name is required"],
