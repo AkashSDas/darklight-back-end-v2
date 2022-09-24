@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { CourseClass, CourseModel } from "../models/course.model";
 
 export const createCourse = async (data: Partial<CourseClass>) => {
@@ -17,4 +18,14 @@ export const updateCourseService = async (
 
 export const getCourseService = async (courseId: string) => {
   return await CourseModel.findOne({ courseId }).exec();
+};
+
+export const getCourseWithInstructor = async (
+  courseId: string,
+  instructorId: string
+) => {
+  return await CourseModel.findOne({
+    courseId,
+    instructors: { $in: new mongoose.Types.ObjectId(instructorId) },
+  }).exec();
 };

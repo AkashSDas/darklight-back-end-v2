@@ -1,8 +1,19 @@
 import { getModelForClass, prop, Ref, Severity } from "@typegoose/typegoose";
 import { SchemaTypes, Types } from "mongoose";
+import { nanoid } from "nanoid";
 import { CourseClass } from "./course.model";
 
 export class ChapterClass {
+  @prop({
+    type: SchemaTypes.String,
+    unique: true,
+    immutable: true,
+    default: () => nanoid(12),
+    required: [true, "Id is required"],
+    maxlength: [12, "Id must be less than 12 characters"],
+  })
+  public chapterId: string;
+
   @prop({ type: SchemaTypes.String })
   emoji?: string;
 

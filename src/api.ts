@@ -53,6 +53,7 @@ app.use("/api/base-auth", require("./routes/base-auth.route").router);
 app.use("/api/social-auth", require("./routes/social-auth.route").router);
 app.use("/api/user", require("./routes/user.route").router);
 app.use("/api/course", require("./routes/course.route").router);
+app.use("/api/chapter", require("./routes/chapter.route").router);
 app.all("*", (req, res) => {
   sendResponseToClient(res, {
     status: 404,
