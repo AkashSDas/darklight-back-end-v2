@@ -1,6 +1,7 @@
 import { Router } from "express";
 import {
   createBaseCourse,
+  getCourseMetaInfo,
   updateCourseMetaInfo,
 } from "../controllers/course.controller";
 import { validateResource } from "../middlewares/validate-resource.middleware";
@@ -23,5 +24,10 @@ router
     "/:courseId",
     handleAsyncMiddleware(verifyAuth),
     handleAsyncMiddleware(updateCourseMetaInfo),
+    handleMiddlewareError
+  )
+  .get(
+    "/:courseId",
+    handleAsyncMiddleware(getCourseMetaInfo),
     handleMiddlewareError
   );

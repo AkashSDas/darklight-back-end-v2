@@ -46,9 +46,21 @@ export const updateCourseMetaInfoSchema = object({
   }),
 });
 
+export const getCourseMetaInfoSchema = object({
+  params: object({
+    courseId: string({ required_error: "Course ID is required" }).length(
+      12, // check course model for this
+      "Invalid course id"
+    ),
+  }),
+});
+
 export type CreateBaseCourseInputBody = TypeOf<
   typeof createBaseCourseSchema
 >["body"];
 export type UpdateCourseMetaInfoInput = TypeOf<
   typeof updateCourseMetaInfoSchema
 >;
+export type GetCourseMetaInfoInputParams = TypeOf<
+  typeof getCourseMetaInfoSchema
+>["params"];

@@ -139,3 +139,18 @@ export const updateCourseMetaInfo = async (
     data: { course: updatedCourse },
   });
 };
+
+export const getCourseMetaInfo = async (req: Request, res: Response) => {
+  // Check if the course exists or not
+  const course = await getCourseService(req.params.courseId);
+  if (!course) {
+    throw new BaseApiError(404, "Course does not exists");
+  }
+
+  return sendResponseToClient(res, {
+    status: 200,
+    error: false,
+    msg: "Course meta info",
+    data: { course },
+  });
+};
