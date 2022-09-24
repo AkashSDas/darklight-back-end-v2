@@ -40,7 +40,7 @@ app.use(passport.session());
 // If the useTempFiles & tempFileDir doesn't work then you've to use
 // readDataURL for file in frontend. Packages like multer, formidable, etc...
 // hides these complexities
-app.use(fileUpload({ useTempFiles: true, tempFileDir: "/fileupload-tmp/" }));
+app.use(fileUpload({ useTempFiles: true, tempFileDir: "/tmp/" }));
 
 // Routes
 

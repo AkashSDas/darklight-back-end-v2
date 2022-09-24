@@ -101,12 +101,22 @@ export const updateCourseMetaInfo = async (
     promises.push(
       uploadAnImage(
         (coverImg as UploadedFile).tempFilePath,
-        process.env.CLOUDINARY_ROOT_COURSE_DIR
+        `${process.env.CLOUDINARY_ROOT_COURSE_DIR}/${course._id}`
       )
     );
 
-    const [_, result] = await Promise.all(promises);
-    updatedData.coverImage = { id: result.id, URL: result.URL };
+    // If course.coverImage is null then result will directly be the uploaded image info
+    // else the result will be an array
+    const result = await Promise.all(promises);
+    if (result.length == 1) {
+      updatedData.coverImage = { id: result[0].id, URL: result[0].URL };
+    } else {
+      // result.length == 2
+      updatedData.coverImage = {
+        id: result[1].id,
+        URL: result[1].URL,
+      };
+    }
   }
 
   const updatedCourse = await updateCourseService(

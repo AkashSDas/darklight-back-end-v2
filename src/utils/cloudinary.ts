@@ -10,10 +10,7 @@ export const uploadAnImage = async (
   const result = await v2.uploader.upload(expressUploadTempPath, {
     folder: `${process.env.CLOUDINARY_ROOT_DIR}/${dir}`,
     transformation: {
-      width: 150,
-      crop: "scale",
       fetch_format: "auto",
-      effect: "cartoonify",
     },
   });
 
