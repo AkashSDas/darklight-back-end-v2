@@ -1,10 +1,19 @@
 import { Request, Response } from "express";
-import logger from "../logger";
-import { CreateBaseCourseInputBody } from "../schema/course.schema";
-import { createCourse } from "../services/course.service";
+import {
+  CreateBaseCourseInputBody,
+  UpdateCourseMetaInfoInput,
+} from "../schema/course.schema";
+import {
+  createCourse,
+  getCourseService,
+  updateCourseService,
+} from "../services/course.service";
 import { getUser } from "../services/user.service";
 import { sendResponseToClient } from "../utils/client-response";
+import { deleteAnImage, uploadAnImage } from "../utils/cloudinary";
 import { UserRole } from "../utils/user";
+import { UploadedFile } from "express-fileupload";
+import { BaseApiError } from "../utils/handle-error";
 
 /**
  * Create a brand new course with the required fields
@@ -50,5 +59,73 @@ export const createBaseCourse = async (
     error: false,
     msg: "Course created successfully",
     data: { course },
+  });
+};
+
+/**
+ * @remarks Instructor cannot be changed using this controller
+ * @remarks For the coverImg file use the `coverImg` name in the `input`
+ */
+export const updateCourseMetaInfo = async (
+  req: Request<
+    UpdateCourseMetaInfoInput["params"],
+    {},
+    UpdateCourseMetaInfoInput["body"]
+  >,
+  res: Response
+) => {
+  const { courseLevel, description, title, price, tags } = req.body;
+  const coverImg = req.files?.coverImg;
+  let updatedData: { [key: string]: any } = {
+    courseLevel,
+    description,
+    title,
+    price,
+    tags,
+  };
+
+  // Check if the course exists or not
+  const course = await getCourseService(req.params.courseId);
+  if (!course) {
+    throw new BaseApiError(404, "Course does not exists");
+  }
+
+  if (coverImg) {
+    // Check if the authenticated user already has an profile pic OR not
+    let promises = [];
+    if (course.coverImage) {
+      promises.push(deleteAnImage(course.coverImage.id));
+    }
+
+    // Upload the img to cloudinary
+    promises.push(
+      uploadAnImage(
+        (coverImg as UploadedFile).tempFilePath,
+        process.env.CLOUDINARY_ROOT_COURSE_DIR
+      )
+    );
+
+    const [_, result] = await Promise.all(promises);
+    updatedData.coverImage = { id: result.id, URL: result.URL };
+  }
+
+  const updatedCourse = await updateCourseService(
+    req.params.courseId,
+    updatedData
+  );
+
+  if (!updatedCourse) {
+    return sendResponseToClient(res, {
+      status: 500,
+      error: true,
+      msg: "Something went wrong, Please try again",
+    });
+  }
+
+  return sendResponseToClient(res, {
+    status: 200,
+    error: false,
+    msg: "Successfully updated the course",
+    data: { course: updatedCourse },
   });
 };
