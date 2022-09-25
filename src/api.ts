@@ -9,6 +9,7 @@ import fileUpload from "express-fileupload";
 import { corsOptions } from "./config/cors-opts";
 import { sendResponseToClient } from "./utils/client-response";
 
+// OAuth Passport Strategies
 import "./passport/google-signup.strategy";
 import "./passport/google-login.strategy";
 import "./passport/facebook-signup.strategy";
@@ -16,9 +17,7 @@ import "./passport/facebook-login.strategy";
 import "./passport/twitter-signup.strategy";
 import "./passport/twitter-login.strategy";
 
-/**
- * @description Express app
- */
+/** Express app */
 export const app = express();
 
 // Middlewares
@@ -36,19 +35,9 @@ app.use(
   })
 );
 app.use(passport.session());
-
-// If the useTempFiles & tempFileDir doesn't work then you've to use
-// readDataURL for file in frontend. Packages like multer, formidable, etc...
-// hides these complexities
 app.use(fileUpload({ useTempFiles: true, tempFileDir: "/tmp/" }));
 
 // Routes
-
-// Test route
-// app.get("/api/test", (_, res: Response) => {
-//   res.status(200).json({ msg: "🌗 DarkLight back-end (REST APIs)" });
-// });
-
 app.use("/api/base-auth", require("./routes/base-auth.route").router);
 app.use("/api/social-auth", require("./routes/social-auth.route").router);
 app.use("/api/user", require("./routes/user.route").router);
