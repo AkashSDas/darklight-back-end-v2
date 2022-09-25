@@ -224,7 +224,7 @@ export class UserClass {
 
     // short duration token, new one is generated with valid refresh token
     return jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, {
-      expiresIn: "30s",
+      expiresIn: "20m",
     });
   }
 
@@ -238,7 +238,7 @@ export class UserClass {
 
     // long duration but does expires
     return jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET, {
-      expiresIn: "1m",
+      expiresIn: "60m",
     });
   }
 
