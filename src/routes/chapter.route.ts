@@ -1,6 +1,6 @@
 import { Router } from "express";
 import {
-  createChapter,
+  createChapterCtrl,
   updateChapterCtrl,
 } from "../controllers/chapter.controller";
 import { validateResource } from "../middlewares/validate-resource.middleware";
@@ -16,7 +16,7 @@ router
     "/:courseId/:instructorId",
     validateResource(createChapterSchema),
     handleAsyncMiddleware(verifyAuth),
-    handleAsyncMiddleware(createChapter),
+    handleAsyncMiddleware(createChapterCtrl),
     handleMiddlewareError
   )
   .put(

@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import mongoose from "mongoose";
 import {
   CreateChapterInput,
   UpdateChapterInput,
@@ -7,21 +8,22 @@ import {
   createChapterService,
   getChapterService,
 } from "../services/chapter.service";
-import {
-  getCourseHavingInstructorService,
-  getCourseWithInstructorService,
-} from "../services/course.service";
+import { getCourseHavingInstructorService } from "../services/course.service";
 import { sendResponseToClient } from "../utils/client-response";
 
-export const createChapter = async (
+/** Create a new chapter */
+export const createChapterCtrl = async (
   req: Request<CreateChapterInput["params"], {}, CreateChapterInput["body"]>,
   res: Response
 ) => {
   const { description, title } = req.body;
   const { courseId, instructorId } = req.params;
 
-  // Find course with this course id and instructor id
-  const course = await getCourseWithInstructorService(courseId, instructorId);
+  // Find a course with this course._id and instructor._id
+  const course = await getCourseHavingInstructorService(
+    courseId,
+    new mongoose.Types.ObjectId(instructorId)
+  );
   if (!course) {
     return sendResponseToClient(res, {
       status: 404,
@@ -34,7 +36,8 @@ export const createChapter = async (
   const chapter = await createChapterService({
     title,
     description,
-    courseId: courseId as any,
+    courseId: new mongoose.Types.ObjectId(courseId),
+    order: 1,
   });
 
   sendResponseToClient(res, {
