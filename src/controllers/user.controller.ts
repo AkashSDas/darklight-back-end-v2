@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import {
-  CheckEmailAvaiableInputParams,
-  CheckUsernameAvaiableInputParams,
-  SignupForInstructorInputParam,
+  CheckEmailAvaiableInput,
+  CheckUsernameAvaiableInput,
+  SignupForInstructorInput,
 } from "../schema/user.schema";
 import { getUserService, userExistsService } from "../services/user.service";
 import { sendResponseToClient } from "../utils/client-response";
@@ -16,7 +16,7 @@ import { UserRole } from "../utils/user";
  * @route GET /user/check-username-avaiable/:username
  */
 export const checkUsernameAvaiable = async (
-  req: Request<CheckUsernameAvaiableInputParams>,
+  req: Request<CheckUsernameAvaiableInput["params"]>,
   res: Response
 ) => {
   const exists = await userExistsService({ username: req.params.username });
@@ -36,7 +36,7 @@ export const checkUsernameAvaiable = async (
  * @route GET /user/check-email-avaiable/:email
  */
 export const checkEmailAvaiable = async (
-  req: Request<CheckEmailAvaiableInputParams>,
+  req: Request<CheckEmailAvaiableInput["params"]>,
   res: Response
 ) => {
   const exists = await userExistsService({ email: req.params.email });
@@ -52,7 +52,7 @@ export const checkEmailAvaiable = async (
  * This userId is the 'user.userId` and not the `user._id`
  */
 export const signupForInstructor = async (
-  req: Request<SignupForInstructorInputParam>,
+  req: Request<SignupForInstructorInput["params"]>,
   res: Response
 ) => {
   const userId = req.params.userId;

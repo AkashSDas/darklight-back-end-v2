@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import {
-  CreateBaseCourseInputBody,
+  CreateBaseCourseInput,
   UpdateCourseMetaInfoInput,
 } from "../schema/course.schema";
 import {
@@ -22,7 +22,7 @@ import { BaseApiError } from "../utils/handle-error";
  * roles and the array will be user.userId and not user._id
  */
 export const createBaseCourse = async (
-  req: Request<{}, {}, CreateBaseCourseInputBody>,
+  req: Request<{}, {}, CreateBaseCourseInput["body"]>,
   res: Response
 ) => {
   const { title, description, instructors, courseLevel } = req.body;

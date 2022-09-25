@@ -1,113 +1,86 @@
-import { object, string, TypeOf } from "zod";
+/**
+ * Schema naming convention - <controller>Schema (without the Ctrl suffix)
+ */
 
-/** User signup request's input schema */
+import { object, string, TypeOf } from "zod";
+import {
+  zodUserConfirmPassword,
+  zodUserEmail,
+  zodUserFullName,
+  zodUserPassword,
+  zodUserUsername,
+} from "./base.schema";
+
+// =================================
+// SCHEMAS
+// =================================
+
 export const signupUserSchema = object({
   body: object({
-    fullName: string({ required_error: "Fullname is required" })
-      .max(240, "Fullname must be less than 240 characters")
-      .min(6, "Fullname should be more than 6 characters"),
-    username: string({ required_error: "Username is required" })
-      .max(120, "Username must be less than 120 characters")
-      .min(3, "Username should be more than 3 characters"),
-    email: string({ required_error: "Email is required" }).email(
-      "Invalid email"
-    ),
-    password: string({ required_error: "Password is required" }).min(
-      6,
-      "Password must be more than 6 characters"
-    ),
-    confirmPassword: string({ required_error: "Confirm password is required" }),
+    fullName: zodUserFullName,
+    username: zodUserUsername,
+    email: zodUserEmail,
+    password: zodUserPassword,
+    confirmPassword: zodUserConfirmPassword,
   }).refine((data) => data.password === data.confirmPassword, {
     message: "Password and confirm password does not match",
     path: ["confirmPassword"],
   }),
 });
 
-/** To get email verification link request's input schema */
 export const getEmailVerificationLinkSchema = object({
-  body: object({
-    email: string({ required_error: "Email is required" }).email(
-      "Invalid email"
-    ),
-  }),
+  body: object({ email: zodUserEmail }),
 });
 
-/** Confirm email request's input schema */
 export const confirmEmailSchema = object({
   params: object({ token: string() }),
 });
 
-/** User login request's input schema */
 export const loginSchema = object({
   body: object({
-    email: string({ required_error: "Email is required" }).email(
-      "Invalid email"
-    ),
-    password: string({ required_error: "Password is required" }).min(
-      6,
-      "Password must be more than 6 characters"
-    ),
-    confirmPassword: string({ required_error: "Confirm password is required" }),
+    email: zodUserEmail,
+    password: zodUserPassword,
+    confirmPassword: zodUserConfirmPassword,
   }).refine((data) => data.password === data.confirmPassword, {
     message: "Password and confirm password does not match",
     path: ["confirmPassword"],
   }),
 });
 
-/** Forgot password request's input schema */
 export const forgotPasswordSchema = object({
-  body: object({
-    email: string({ required_error: "Email is required" }).email(
-      "Invalid email"
-    ),
-  }),
+  body: object({ email: zodUserEmail }),
 });
 
-/** Password reset request's input schema */
 export const passwordResetSchema = object({
   params: object({ token: string() }),
   body: object({
-    password: string({ required_error: "Password is required" }).min(6, {
-      message: "Password must be more than 6 characters",
-    }),
-    confirmPassword: string({ required_error: "Confirm password is required" }),
+    password: zodUserPassword,
+    confirmPassword: zodUserConfirmPassword,
   }).refine((data) => data.password === data.confirmPassword, {
     message: "Password and confirm password does not match",
     path: ["confirmPassword"],
   }),
 });
 
-/** Username available request's input schema */
 export const usernameAvailableSchema = object({
-  params: object({
-    username: string({ required_error: "Username is required" })
-      .max(120, "Username must be less than 120 characters")
-      .min(3, "Username should be more than 3 characters"),
-  }),
+  params: object({ username: zodUserUsername }),
 });
 
-/** Email available request's input schema */
 export const emailAvailableSchema = object({
-  params: object({
-    email: string({ required_error: "Email is required" }).email(
-      "Invalid email address"
-    ),
-  }),
+  params: object({ email: zodUserEmail }),
 });
 
-export type SignupUserInputBody = TypeOf<typeof signupUserSchema>["body"];
-export type GetEmailVerificationLinkInputBody = TypeOf<
+// =================================
+// TYPES
+// =================================
+
+export type SignupUserInput = TypeOf<typeof signupUserSchema>;
+export type GetEmailVerificationLinkInput = TypeOf<
   typeof getEmailVerificationLinkSchema
->["body"];
-export type ConfirmEmailInputParams = TypeOf<
-  typeof confirmEmailSchema
->["params"];
-export type LoginInputBody = TypeOf<typeof loginSchema>["body"];
-export type ForgotPasswordInputBody = TypeOf<
-  typeof forgotPasswordSchema
->["body"];
+>;
+export type ConfirmEmailInput = TypeOf<typeof confirmEmailSchema>;
+export type LoginInput = TypeOf<typeof loginSchema>;
+export type ForgotPasswordInput = TypeOf<typeof forgotPasswordSchema>;
 export type PasswordResetInput = TypeOf<typeof passwordResetSchema>;
-export type UsernameInputParams = TypeOf<
-  typeof usernameAvailableSchema
->["params"];
-export type EmailInputParams = TypeOf<typeof emailAvailableSchema>["params"];
+export type UsernameInput = TypeOf<typeof usernameAvailableSchema>;
+export type EmailInput = TypeOf<typeof emailAvailableSchema>;

@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { AddPostOAuthUserInfoSchemaInputBody } from "../schema/social-auth.schema";
+import { AddPostOAuthUserInfoSchemaInput } from "../schema/social-auth.schema";
 import { deleteUserService, updateUserService } from "../services/user.service";
 
 import { sendResponseToClient } from "../utils/client-response";
@@ -17,7 +17,7 @@ export const signupWithGoogle = () => {};
 export const signupWithGoogleRedirect = () => {};
 
 export const addPostOAuthUserInfo = async (
-  req: Request<{}, {}, AddPostOAuthUserInfoSchemaInputBody>,
+  req: Request<{}, {}, AddPostOAuthUserInfoSchemaInput["body"]>,
   res: Response
 ) => {
   const { username, email, fullName } = req.body;

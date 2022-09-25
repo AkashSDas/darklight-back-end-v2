@@ -4,14 +4,14 @@ import jwt from "jsonwebtoken";
 
 import logger from "../logger";
 import {
-  ConfirmEmailInputParams,
-  EmailInputParams,
-  ForgotPasswordInputBody,
-  GetEmailVerificationLinkInputBody,
-  LoginInputBody,
+  ConfirmEmailInput,
+  EmailInput,
+  ForgotPasswordInput,
+  GetEmailVerificationLinkInput,
+  LoginInput,
   PasswordResetInput,
-  SignupUserInputBody,
-  UsernameInputParams,
+  SignupUserInput,
+  UsernameInput,
 } from "../schema/base-auth.schema";
 import {
   createUserService,
@@ -30,7 +30,7 @@ import { EmailOptions, sendEmail } from "../utils/send-email";
  * @param res Express response object
  */
 export const signup = async (
-  req: Request<{}, {}, SignupUserInputBody>,
+  req: Request<{}, {}, SignupUserInput["body"]>,
   res: Response
 ) => {
   const { fullName, username, email, password } = req.body;
@@ -96,7 +96,7 @@ export const signup = async (
  * @throws `BaseApiError` if user is not found
  */
 export const getEmailVerificationLink = async (
-  req: Request<{}, {}, GetEmailVerificationLinkInputBody>,
+  req: Request<{}, {}, GetEmailVerificationLinkInput["body"]>,
   res: Response
 ) => {
   const { email } = req.body;
@@ -139,7 +139,7 @@ export const getEmailVerificationLink = async (
 };
 
 export const confirmEmail = async (
-  req: Request<ConfirmEmailInputParams>,
+  req: Request<ConfirmEmailInput["params"]>,
   res: Response
 ) => {
   logger.info(req.params.token);
@@ -170,7 +170,7 @@ export const confirmEmail = async (
 };
 
 export const login = async (
-  req: Request<{}, {}, LoginInputBody>,
+  req: Request<{}, {}, LoginInput["body"]>,
   res: Response
 ) => {
   const { email, password } = req.body;
@@ -249,7 +249,7 @@ export const refresh = async (req: Request, res: Response) => {
 };
 
 export const forgotPassword = async (
-  req: Request<{}, {}, ForgotPasswordInputBody>,
+  req: Request<{}, {}, ForgotPasswordInput["body"]>,
   res: Response
 ) => {
   // Check if the user exists OR not
@@ -352,7 +352,7 @@ export const logout = async (req: Request, res: Response) => {
 };
 
 export const usernameAvailable = async (
-  req: Request<UsernameInputParams>,
+  req: Request<UsernameInput["params"]>,
   res: Response
 ) => {
   const exists = await userExistsService({ username: req.params.username });
@@ -365,7 +365,7 @@ export const usernameAvailable = async (
 };
 
 export const emailAvailable = async (
-  req: Request<EmailInputParams>,
+  req: Request<EmailInput["params"]>,
   res: Response
 ) => {
   const exists = await userExistsService({ email: req.params.email });
