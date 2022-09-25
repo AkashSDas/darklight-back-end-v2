@@ -1,18 +1,26 @@
-import { getModelForClass, prop, Ref, Severity } from "@typegoose/typegoose";
+import {
+  getModelForClass,
+  pre,
+  prop,
+  Ref,
+  Severity,
+} from "@typegoose/typegoose";
 import { SchemaTypes, Types } from "mongoose";
-import { nanoid } from "nanoid";
 import { CourseClass } from "./course.model";
 
+@pre<ChapterClass>("save", async function (next) {
+  // TODO:
+  // Check whether the chapter order is valid (should be unique for the course)
+  // and is an increment of 1 from the previous chapter
+  next();
+})
 export class ChapterClass {
   @prop({
-    type: SchemaTypes.String,
-    unique: true,
-    immutable: true,
-    default: () => nanoid(12),
-    required: [true, "Id is required"],
-    maxlength: [12, "Id must be less than 12 characters"],
+    type: SchemaTypes.Number,
+    required: true,
+    min: [1, "Order should be at least 0"],
   })
-  public chapterId: string;
+  order: number;
 
   @prop({ type: SchemaTypes.String })
   emoji?: string;

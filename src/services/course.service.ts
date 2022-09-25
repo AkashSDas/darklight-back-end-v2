@@ -29,3 +29,18 @@ export const getCourseWithInstructor = async (
     instructors: { $in: new mongoose.Types.ObjectId(instructorId) },
   }).exec();
 };
+
+/**
+ * @param id Course mongodb _id
+ * @param instructorId User mongodb _id (this user should have instructor role)
+ * @returns Course
+ */
+export const getCourseHavingInstructorService = async (
+  id: string,
+  instructorId: mongoose.Types.ObjectId
+) => {
+  return await CourseModel.findOne({
+    _id: id,
+    instructors: { $in: instructorId },
+  }).exec();
+};
