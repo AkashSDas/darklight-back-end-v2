@@ -2,7 +2,7 @@ import passport from "passport";
 import { Profile, Strategy, VerifyCallback } from "passport-google-oauth20";
 
 import { UserModel } from "../models/user.model";
-import { getUser } from "../services/user.service";
+import { getUserService } from "../services/user.service";
 
 passport.serializeUser((user, done) => {
   done(null, (user as any)._id);
@@ -22,7 +22,7 @@ export const googleSignupStrategy = () => {
     next: VerifyCallback
   ) => {
     const { email } = profile._json;
-    const user = await getUser({ email });
+    const user = await getUserService({ email });
     if (user && (!user.username || !user.email || !user.fullName)) {
       return next(null, null);
     }

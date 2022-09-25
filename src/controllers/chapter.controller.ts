@@ -9,7 +9,7 @@ import {
 } from "../services/chapter.service";
 import {
   getCourseHavingInstructorService,
-  getCourseWithInstructor,
+  getCourseWithInstructorService,
 } from "../services/course.service";
 import { sendResponseToClient } from "../utils/client-response";
 
@@ -21,7 +21,7 @@ export const createChapter = async (
   const { courseId, instructorId } = req.params;
 
   // Find course with this course id and instructor id
-  const course = await getCourseWithInstructor(courseId, instructorId);
+  const course = await getCourseWithInstructorService(courseId, instructorId);
   if (!course) {
     return sendResponseToClient(res, {
       status: 404,

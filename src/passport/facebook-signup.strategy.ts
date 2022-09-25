@@ -5,7 +5,7 @@ import { SocialAuthProvider } from "../utils/user";
 import { Profile, Strategy } from "passport-facebook";
 
 import { UserModel } from "../models/user.model";
-import { createUser, getUser } from "../services/user.service";
+import { createUserService, getUserService } from "../services/user.service";
 
 passport.serializeUser((user, done) => {
   done(null, (user as any)._id);
@@ -26,7 +26,7 @@ export const facebookSignupStrategy = () => {
     next: any
   ) => {
     const { email, id, name, picture } = profile._json;
-    const user = await getUser({ email });
+    const user = await getUserService({ email });
     if (user) return next(null, user); // Login the user
 
     // Signup the user
@@ -34,7 +34,7 @@ export const facebookSignupStrategy = () => {
     let err = null;
     try {
       // If no email then user will verify it from app's settings
-      newUser = await createUser({
+      newUser = await createUserService({
         fullName: name,
         email: email ?? undefined,
         emailVerified: email ? true : false,

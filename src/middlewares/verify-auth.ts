@@ -2,7 +2,7 @@ import { JwtPayload } from "jsonwebtoken";
 import { BaseApiError } from "../utils/handle-error";
 import { AsyncMiddleware } from "../utils/types";
 import jwt from "jsonwebtoken";
-import { getUser } from "../services/user.service";
+import { getUserService } from "../services/user.service";
 import logger from "../logger";
 
 export const verifyAuth: AsyncMiddleware = async (req, res, next) => {
@@ -30,7 +30,7 @@ export const verifyAuth: AsyncMiddleware = async (req, res, next) => {
       process.env.ACCESS_TOKEN_SECRET
     ) as JwtPayload;
 
-    const user = await getUser({ userId: decoded.userId });
+    const user = await getUserService({ userId: decoded.userId });
     req.user = user;
     next();
   } catch (err) {

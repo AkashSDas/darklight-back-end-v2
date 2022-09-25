@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import { CourseClass, CourseModel } from "../models/course.model";
 
-export const createCourse = async (data: Partial<CourseClass>) => {
+export const createCourseService = async (data: Partial<CourseClass>) => {
   const course = new CourseModel(data);
   return await course.save();
 };
@@ -20,7 +20,7 @@ export const getCourseService = async (courseId: string) => {
   return await CourseModel.findOne({ courseId }).exec();
 };
 
-export const getCourseWithInstructor = async (
+export const getCourseWithInstructorService = async (
   courseId: string,
   instructorId: string
 ) => {

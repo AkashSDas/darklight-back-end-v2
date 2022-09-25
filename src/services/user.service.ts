@@ -10,9 +10,9 @@ import { UserClass, UserModel } from "../models/user.model";
 /**
  * Get a single user
  * @param {FilterQuery} filter Query for filtering out a user
- * @returns {Promise<UserClass>} Promise of a user
+ * @returns Promise of a user
  */
-export const getUser = async (filter: FilterQuery<UserClass>) => {
+export const getUserService = async (filter: FilterQuery<UserClass>) => {
   return await UserModel.findOne(filter, "-__v").exec();
 };
 
@@ -21,7 +21,7 @@ export const getUser = async (filter: FilterQuery<UserClass>) => {
  * @param {FilterQuery} filter Query for filtering out a user
  * @returns {Promise<number>} Promise of user counts that match the filter
  */
-export const userExists = async (
+export const userExistsService = async (
   filter: FilterQuery<UserClass>
 ): Promise<number> => {
   return await UserModel.count(filter).exec();
@@ -32,7 +32,7 @@ export const userExists = async (
  * @param {Partial<UserClass>} data User data to be saved
  * @returns Promise of a user
  */
-export const createUser = async (data: Partial<UserClass>) => {
+export const createUserService = async (data: Partial<UserClass>) => {
   const user = new UserModel(data);
   return await user.save();
 };
@@ -43,7 +43,7 @@ export const createUser = async (data: Partial<UserClass>) => {
  * @param {Partial<UserClass>} data User data to be updated
  * @returns Promise of a user
  */
-export const updateUser = async (
+export const updateUserService = async (
   filter: FilterQuery<UserClass>,
   data: Partial<UserClass>
 ) => {
@@ -53,13 +53,13 @@ export const updateUser = async (
   }).exec();
 };
 
-export const getUserWithFields = async (
+export const getUserWithFieldsService = async (
   filter: FilterQuery<UserClass>,
   select: string
 ) => {
   return await UserModel.findOne(filter).select(`${select} -__v`).exec();
 };
 
-export const deleteUser = async (filter: FilterQuery<UserClass>) => {
+export const deleteUserService = async (filter: FilterQuery<UserClass>) => {
   return await UserModel.findOneAndDelete(filter).exec();
 };

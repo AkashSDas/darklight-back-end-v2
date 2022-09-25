@@ -2,7 +2,7 @@ import passport from "passport";
 import { Profile, Strategy } from "passport-facebook";
 
 import { UserModel } from "../models/user.model";
-import { getUser } from "../services/user.service";
+import { getUserService } from "../services/user.service";
 import { SocialAuthProvider } from "../utils/user";
 
 passport.serializeUser((user, done) => {
@@ -23,7 +23,7 @@ export const facebookLoginStrategy = () => {
     next: any
   ) => {
     const { id } = profile._json;
-    const user = await getUser({
+    const user = await getUserService({
       socialAuthInfo: {
         $elemMatch: { id, provider: SocialAuthProvider.FACEBOOK },
       },

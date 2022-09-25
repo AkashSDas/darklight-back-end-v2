@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { AddPostOAuthUserInfoSchemaInputBody } from "../schema/social-auth.schema";
-import { deleteUser, updateUser } from "../services/user.service";
+import { deleteUserService, updateUserService } from "../services/user.service";
 
 import { sendResponseToClient } from "../utils/client-response";
 
@@ -21,7 +21,7 @@ export const addPostOAuthUserInfo = async (
   res: Response
 ) => {
   const { username, email, fullName } = req.body;
-  await updateUser({ _id: req.user._id }, { username, email, fullName });
+  await updateUserService({ _id: req.user._id }, { username, email, fullName });
 
   sendResponseToClient(res, {
     status: 200,
@@ -43,7 +43,7 @@ export const socialLogout = async (req: Request, res: Response) => {
 };
 
 export const cancelSocialAuth = async (req: Request, res: Response) => {
-  await deleteUser({ _id: req.user?._id });
+  await deleteUserService({ _id: req.user?._id });
 
   req.logOut &&
     req.logOut(() => {

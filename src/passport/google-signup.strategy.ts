@@ -5,7 +5,7 @@ import logger from "../logger";
 import { SocialAuthProvider } from "../utils/user";
 
 import { UserModel } from "../models/user.model";
-import { createUser, getUser } from "../services/user.service";
+import { createUserService, getUserService } from "../services/user.service";
 
 passport.serializeUser((user, done) => {
   done(null, (user as any)._id);
@@ -27,14 +27,14 @@ export const googleSignupStrategy = () => {
   ) => {
     const { email, sub, email_verified, picture } = profile._json;
 
-    const user = await getUser({ email });
+    const user = await getUserService({ email });
     if (user) return next(null, user); // Login the user
 
     // Signup the user
     let newUser = null;
     let err = null;
     try {
-      newUser = await createUser({
+      newUser = await createUserService({
         fullName: profile.displayName,
         email: email,
         emailVerified: email_verified == "true" ? true : false,

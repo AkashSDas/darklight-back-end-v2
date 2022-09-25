@@ -14,10 +14,10 @@ import {
   UsernameInputParams,
 } from "../schema/base-auth.schema";
 import {
-  createUser,
-  getUser,
-  getUserWithFields,
-  userExists,
+  createUserService,
+  getUserService,
+  getUserWithFieldsService,
+  userExistsService,
 } from "../services/user.service";
 import { sendResponseToClient } from "../utils/client-response";
 import { BaseApiError } from "../utils/handle-error";
@@ -34,7 +34,7 @@ export const signup = async (
   res: Response
 ) => {
   const { fullName, username, email, password } = req.body;
-  const user = await createUser({
+  const user = await createUserService({
     fullName,
     username,
     email,
@@ -100,7 +100,7 @@ export const getEmailVerificationLink = async (
   res: Response
 ) => {
   const { email } = req.body;
-  const user = await getUser({ email });
+  const user = await getUserService({ email });
   if (!user) throw new BaseApiError(404, "User does not exists");
 
   // Check if user is already verified
@@ -149,7 +149,7 @@ export const confirmEmail = async (
     .update(req.params.token)
     .digest("hex");
 
-  const user = await getUser({
+  const user = await getUserService({
     emailVerificationToken: encryptedToken,
     emailVerificationTokenExpiry: { $gt: new Date(Date.now()) },
   });
@@ -177,7 +177,7 @@ export const login = async (
 
   // Check if user exists OR not. Also get `passwordDigest` too as it will be
   // used while using `.checkPassword` method
-  const user = await getUserWithFields({ email }, "+passwordDigest");
+  const user = await getUserWithFieldsService({ email }, "+passwordDigest");
   if (!user) throw new BaseApiError(404, "User does not exists");
 
   // Check if the password is correct
@@ -230,7 +230,7 @@ export const refresh = async (req: Request, res: Response) => {
       async (err, decoded) => {
         if (err) throw new BaseApiError(403, "Forbidden");
 
-        const user = await getUser({ userId: decoded.userId });
+        const user = await getUserService({ userId: decoded.userId });
         if (!user) throw new BaseApiError(404, "User does not exists");
 
         const accessToken = user.generateAccessToken();
@@ -253,7 +253,7 @@ export const forgotPassword = async (
   res: Response
 ) => {
   // Check if the user exists OR not
-  const user = await getUser({ email: req.body.email });
+  const user = await getUserService({ email: req.body.email });
   if (!user) throw new BaseApiError(404, "User does not exists");
 
   // Generating forgot password token
@@ -302,7 +302,7 @@ export const resetPassword = async (
     .update(req.params.token)
     .digest("hex");
 
-  const user = await getUser({
+  const user = await getUserService({
     passwordResetToken: encryptedToken,
     passwordResetTokenExpiry: { $gt: new Date(Date.now()) },
   });
@@ -355,7 +355,7 @@ export const usernameAvailable = async (
   req: Request<UsernameInputParams>,
   res: Response
 ) => {
-  const exists = await userExists({ username: req.params.username });
+  const exists = await userExistsService({ username: req.params.username });
   sendResponseToClient(res, {
     status: 200,
     error: false,
@@ -368,7 +368,7 @@ export const emailAvailable = async (
   req: Request<EmailInputParams>,
   res: Response
 ) => {
-  const exists = await userExists({ email: req.params.email });
+  const exists = await userExistsService({ email: req.params.email });
   sendResponseToClient(res, {
     status: 200,
     error: false,

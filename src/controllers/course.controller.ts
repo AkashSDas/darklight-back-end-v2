@@ -4,11 +4,11 @@ import {
   UpdateCourseMetaInfoInput,
 } from "../schema/course.schema";
 import {
-  createCourse,
+  createCourseService,
   getCourseService,
   updateCourseService,
 } from "../services/course.service";
-import { getUser } from "../services/user.service";
+import { getUserService } from "../services/user.service";
 import { sendResponseToClient } from "../utils/client-response";
 import { deleteAnImage, uploadAnImage } from "../utils/cloudinary";
 import { UserRole } from "../utils/user";
@@ -31,7 +31,7 @@ export const createBaseCourse = async (
   let instructorSearch = [];
   for (let uid of instructors) {
     instructorSearch.push(
-      getUser({ userId: uid, roles: { $in: UserRole.INSTRUCTOR } })
+      getUserService({ userId: uid, roles: { $in: UserRole.INSTRUCTOR } })
     );
   }
   const users = await Promise.all(instructorSearch);
@@ -47,7 +47,7 @@ export const createBaseCourse = async (
 
   // Create the course
   const uids = users.map((u) => u._id);
-  const course = await createCourse({
+  const course = await createCourseService({
     title,
     description,
     instructors: uids,

@@ -4,7 +4,7 @@ import {
   CheckUsernameAvaiableInputParams,
   SignupForInstructorInputParam,
 } from "../schema/user.schema";
-import { getUser, userExists } from "../services/user.service";
+import { getUserService, userExistsService } from "../services/user.service";
 import { sendResponseToClient } from "../utils/client-response";
 import { UserRole } from "../utils/user";
 
@@ -19,7 +19,7 @@ export const checkUsernameAvaiable = async (
   req: Request<CheckUsernameAvaiableInputParams>,
   res: Response
 ) => {
-  const exists = await userExists({ username: req.params.username });
+  const exists = await userExistsService({ username: req.params.username });
   sendResponseToClient(res, {
     status: 200,
     error: false,
@@ -39,7 +39,7 @@ export const checkEmailAvaiable = async (
   req: Request<CheckEmailAvaiableInputParams>,
   res: Response
 ) => {
-  const exists = await userExists({ email: req.params.email });
+  const exists = await userExistsService({ email: req.params.email });
   sendResponseToClient(res, {
     status: 200,
     error: false,
@@ -56,7 +56,7 @@ export const signupForInstructor = async (
   res: Response
 ) => {
   const userId = req.params.userId;
-  const user = await getUser({ userId: userId });
+  const user = await getUserService({ userId: userId });
   if (!user) {
     return sendResponseToClient(res, {
       status: 404,
