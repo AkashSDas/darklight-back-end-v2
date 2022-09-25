@@ -1,27 +1,8 @@
-import {
-  getModelForClass,
-  pre,
-  prop,
-  Ref,
-  Severity,
-} from "@typegoose/typegoose";
+import { getModelForClass, prop, Ref, Severity } from "@typegoose/typegoose";
 import { SchemaTypes, Types } from "mongoose";
 import { CourseClass } from "./course.model";
 
-@pre<ChapterClass>("save", async function (next) {
-  // TODO:
-  // Check whether the chapter order is valid (should be unique for the course)
-  // and is an increment of 1 from the previous chapter
-  next();
-})
 export class ChapterClass {
-  @prop({
-    type: SchemaTypes.Number,
-    required: true,
-    min: [1, "Order should be at least 0"],
-  })
-  order: number;
-
   @prop({ type: SchemaTypes.String })
   emoji?: string;
 
@@ -43,8 +24,9 @@ export class ChapterClass {
   })
   description: string;
 
+  // https://typegoose.github.io/typegoose/docs/guides/advanced/reference-other-classes/#common-problems
   @prop({
-    ref: () => CourseClass,
+    ref: () => "CourseClass",
     required: [true, "Course is required"],
   })
   courseId: Ref<CourseClass>;

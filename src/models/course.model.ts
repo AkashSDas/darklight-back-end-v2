@@ -1,6 +1,7 @@
 import { getModelForClass, prop, Ref, Severity } from "@typegoose/typegoose";
 import { SchemaTypes, Types } from "mongoose";
 import { nanoid } from "nanoid";
+import { ChapterClass } from "./chapter.model";
 import { CoverImageClass } from "./image.model";
 import { UserClass } from "./user.model";
 
@@ -82,10 +83,17 @@ export class CourseClass {
   @prop({ type: () => CoverImageClass })
   coverImage?: CoverImageClass | null;
 
+  @prop({
+    ref: () => ChapterClass,
+    type: () => SchemaTypes.Array,
+    default: [],
+    required: [true, "Chapters for the course are required"],
+  })
+  chapters: Ref<ChapterClass>[];
+
   // ========================================
   // VIRTUALS
   // ========================================
-
   _id!: Types.ObjectId;
   /** Transformed MongoDB `_id` to `id` */
   public get id() {

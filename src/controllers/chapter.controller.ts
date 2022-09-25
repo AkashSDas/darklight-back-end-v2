@@ -1,13 +1,11 @@
 import { Request, Response } from "express";
 import mongoose from "mongoose";
+import { ChapterModel } from "../models/chapter.model";
 import {
   CreateChapterInput,
   UpdateChapterInput,
 } from "../schema/chapter.schema";
-import {
-  createChapterService,
-  getChapterService,
-} from "../services/chapter.service";
+import { getChapterService } from "../services/chapter.service";
 import { getCourseHavingInstructorService } from "../services/course.service";
 import { sendResponseToClient } from "../utils/client-response";
 
@@ -32,20 +30,31 @@ export const createChapterCtrl = async (
     });
   }
 
-  // Create chapter
-  const chapter = await createChapterService({
-    title,
-    description,
-    courseId: new mongoose.Types.ObjectId(courseId),
-    order: 1,
-  });
+  // Creating a new chapter and adding it to the course.chapters array
+  const session = await mongoose.startSession();
+  session.startTransaction();
 
-  sendResponseToClient(res, {
-    status: 200,
-    error: false,
-    msg: "Chapter created successfully",
-    data: { chapter },
-  });
+  try {
+    const chapter = new ChapterModel({
+      title,
+      description,
+      courseId,
+    });
+    course.chapters.push(chapter._id);
+    await chapter.save({ session });
+    await course.save({ session });
+    await session.commitTransaction();
+
+    sendResponseToClient(res, {
+      status: 200,
+      error: false,
+      msg: "Chapter created successfully",
+      data: { chapter },
+    });
+  } catch (err) {
+    await session.abortTransaction();
+    throw err; // to be handled by api error handler
+  }
 };
 
 /**
