@@ -1,15 +1,11 @@
 /**
  * Handle async module
  * @module /src/utils/handle-async.ts
- *
- * @version 1.0.0
- * @description Utils for handling async operations
  */
 
 import { NextFunction, Request, Response } from "express";
 
 import logger from "../logger";
-import { AsyncMiddleware } from "./types";
 
 /**
  * @param promise A promise whose error needs to be handled
@@ -24,18 +20,22 @@ import { AsyncMiddleware } from "./types";
 
 export const handleAsync = async (
   promise: Promise<any>,
-  logError: boolean = true,
-  errorId?: string
+  logError: boolean = true
 ): Promise<any[]> => {
   try {
     const result = await promise;
     return [null, result];
   } catch (err) {
-    if (logError) logger.error(errorId ?? "", err);
+    if (logError) logger.error("/utils/handle-async", err);
     return [err, null];
   }
 };
 
+type AsyncHandler = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => Promise<void>;
 /**
  * @description The returned middleware will catch any errors and pass them to the
  * next middleware. If no error then it will function accordingly. Therefore the
@@ -44,7 +44,7 @@ export const handleAsync = async (
  * @param fn A middleware OR controller function that returns a promise
  * @returns The given middleware function is returned along with error handling
  */
-export const handleAsyncMiddleware = (fn: AsyncMiddleware): AsyncMiddleware => {
+export const handleAsyncMiddleware = (fn: AsyncHandler): AsyncHandler => {
   return (req: Request, res: Response, next: NextFunction): Promise<void> => {
     return fn(req, res, next).catch(next);
   };

@@ -16,7 +16,8 @@ export interface EmailOptions {
 /**
  * Send email
  * @param opts Options for email sent to the user
- * @returns {Promise<SMTPTransport.SentMessageInfo>} Returns a promise of sending the email
+ * @returns {Promise<SMTPTransport.SentMessageInfo>} Returns a promise of sending
+ * the email
  */
 export const sendEmail = async (
   opts: EmailOptions

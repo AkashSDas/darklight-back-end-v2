@@ -1,39 +1,22 @@
 /**
  * Handle responses send to client
  * @module /src/utils/client-response.ts
- *
- * @version 1.0.0
- * @description Utils for handling responses that are send to the clients
  */
 
 import { Response } from "express";
 
-/**
- * Options for sending response to the client
- */
+/** Options for sending response to the client */
 interface ClientResponseOptions {
-  /**
-   * Status code for the response
-   * @member {number} ClientResponseOptions.status
-   */
+  /** Status code for the response */
   status: number;
 
-  /**
-   * Whether the response is an error or not
-   * @member {boolean} ClientResponseOptions.error
-   */
+  /** Whether the response is an error or not */
   error: boolean;
 
-  /**
-   * Message for the response
-   * @member {string} ClientResponseOptions.msg
-   */
+  /** Message for the response */
   msg: string;
 
-  /**
-   * Data for the response (optional)
-   * @member {{[key: string]: any}} ClientResponseOptions.data
-   */
+  /** Data for the response (optional) */
   data?: { [key: string]: any };
 }
 

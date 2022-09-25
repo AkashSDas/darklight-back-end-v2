@@ -1,9 +1,6 @@
 /**
  * Handle errors module
  * @module /src/utils/handle-error.ts
- *
- * @version 1.0.0
- * @description Utils for handling errors
  */
 
 import { NextFunction, Request, Response } from "express";
@@ -64,7 +61,7 @@ export const handleMiddlewareError = (
     });
   }
 
-  logger.error(`BaseApiError: ${err}`);
+  logger.error("/utils/handle-error", err);
   const status = (err as any)?.status || 400;
   const msg = (err as any)?.msg || "Something went wrong, Please try again";
   sendResponseToClient(res, { status, msg, error: true });
