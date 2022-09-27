@@ -1,20 +1,16 @@
 /**
- * Handle errors module
+ * API Error Handling Module
  * @module /src/utils/handle-error.ts
+ * @description Defines the error handling utils for the API
  */
 
-import { NextFunction, Request, Response } from "express";
+import { Request, Response } from "express";
 
-import logger from "../logger";
-import { sendResponseToClient } from "./client-response";
+import { sendResponse } from "./client-response";
 
 /**
- * Useful to throw errors while working with controllers. This error can be caught
- * by the `handleMiddlewareError` function and can send appropriate response to
- * the client.
- *
- * @example
- * throw new BaseApiError(404, "User not found");
+ * API error class
+ * @example throw new BaseApiError(404, "User not found");
  */
 export class BaseApiError extends Error {
   public msg: string;
@@ -36,10 +32,8 @@ export class BaseApiError extends Error {
  * Handle API errors
  *
  * @param {unknown} err Unknown error (can be any type and even not be there if no error)
- * @param {Request} req Express request
  * @param {Response} res Express response
- * @param {NextFunction} next Express Next function
- * @returns void
+ * @returns {void} void
  *
  * @example
  * app.use(handleMiddlewareError);
@@ -47,22 +41,8 @@ export class BaseApiError extends Error {
  * @example
  * route.get('/route', handleMiddlewareError(controller));
  */
-export const handleMiddlewareError = (
-  err: unknown,
-  req: Request,
-  res: Response,
-  next: NextFunction
-): void => {
-  if (err instanceof BaseApiError) {
-    return sendResponseToClient(res, {
-      status: err.status,
-      error: true,
-      msg: err.msg,
-    });
-  }
-
-  logger.error("/utils/handle-error", err);
-  const status = (err as any)?.status || 400;
-  const msg = (err as any)?.msg || "Something went wrong, Please try again";
-  sendResponseToClient(res, { status, msg, error: true });
-};
+export function handleCtrlError(err: unknown, _: Request, res: Response): void {
+  var status = (err as any)?.status || 400;
+  var msg = (err as any)?.msg || "Something went wrong, Please try again";
+  sendResponse(res, { status, msg });
+}
