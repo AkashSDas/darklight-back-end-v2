@@ -1,38 +1,32 @@
 /**
- * Handle responses send to client
+ * Client response module
  * @module /src/utils/client-response.ts
+ *
+ * @description Define utils for handling client responses
  */
 
 import { Response } from "express";
 
-/** Options for sending response to the client */
 interface ClientResponseOptions {
   /** Status code for the response */
   status: number;
-
-  /** Whether the response is an error or not */
-  error: boolean;
-
-  /** Message for the response */
+  /** Data (message) sent to the client */
   msg: string;
-
-  /** Data for the response (optional) */
+  /** Additional data to send to the client (optional) */
   data?: { [key: string]: any };
 }
 
 /**
- * Send response to the client
- *
- * @param {Response} res Express response
- * @param {ClientResponseOptions} opts Options for the response
- * @returns void
+ * @param {Response} res Response to send to the client
+ * @param {ClientResponseOptions} options Options for the response
+ * @returns {void} void
  * @example
- * sendResponseToClient(res, { status: 200, msg: "Success" });
+ * sendResponse(res, { status: 200, msg: "Success" })
  */
-export const sendResponseToClient = (
+export function sendResponse(
   res: Response,
-  opts: ClientResponseOptions
-): void => {
-  const { status, error, msg, data } = opts;
-  res.status(status).json({ error, msg, data });
-};
+  options: ClientResponseOptions
+): void {
+  var { status, msg, data } = options;
+  res.status(status).json({ msg, data });
+}
