@@ -2,41 +2,47 @@ import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
 import { SchemaTypes, Types } from "mongoose";
-import { nanoid } from "nanoid";
 import validator from "validator";
 
-import {
-  getModelForClass,
-  modelOptions,
-  post,
-  pre,
-  prop,
-  Severity,
-} from "@typegoose/typegoose";
+import { getModelForClass, modelOptions, post, pre, prop, Severity } from "@typegoose/typegoose";
 
 import { BaseApiError } from "../utils/handle-error";
-import { SocialAuthProvider, UserRole } from "../utils/user";
-import { UserProfilePic } from "./user-profile-pic.model";
 
-/**
- * User class handling user related operations. It contains:
- * - Properties
- * - Methods
- * - Hooks
- * - Virtuals
- */
-@pre<UserClass>("save", async function (next) {
+// ===============================
+// Enums
+// ===============================
+
+export enum UserRole {
+  STUDENT = "student",
+  INSTRUCTOR = "instructor",
+  ADMIN = "admin",
+}
+
+// ===============================
+// Typegoose schema classes
+// ===============================
+
+/** User profile image sub-document class */
+class ProfileImage {
+  /** id of the image saved in the cloud */
+  @prop({ type: SchemaTypes.String, required: true })
+  id: string;
+
+  @prop({ type: SchemaTypes.String, required: true })
+  URL: string;
+}
+
+/** User model class */
+@pre<UserClass>("save", async function encryptPassword(next) {
   // Encrypt user's plain text password before saving user
-
   // Only go ahead if the password was modified (not on other update functions)
   if (!this.isModified("passwordDigest")) return next();
-
   this.passwordDigest = await bcrypt.hash(this.passwordDigest, 12);
 })
-@post<UserClass>("save", function (error, user, next) {
-  // Handle error for trying to create user with duplicate email
-  if (error.name === "MongoServerError" && error.code === 11000) {
-    next(new BaseApiError(400, `User with email ${user.email} already exists`));
+@post<UserClass>("save", function handleDuplicateUserError(err, user, next) {
+  // Handle error due to user trying to create user with duplicate fields (email OR username)
+  if (err.name == "MongoServerError" && err.code == 11000) {
+    next(new BaseApiError(400, "Username OR email already used"));
   }
   next();
 })
@@ -51,121 +57,82 @@ import { UserProfilePic } from "./user-profile-pic.model";
 export class UserClass {
   @prop({
     type: SchemaTypes.String,
-    unique: true,
-    immutable: true,
-    default: () => nanoid(12),
-    required: [true, "Id is required"],
-    maxlength: [12, "Id must be less than 12 characters"],
-  })
-  public userId: string;
-
-  @prop({
-    type: SchemaTypes.String,
+    required: [true, "Full name is required"],
+    maxlength: [240, "Max length can be 240 characters"],
+    minlength: [6, "Minimum length should be 6 characters"],
     trim: true,
-    required: [true, "Fullname is required"],
-    maxlength: [240, "Fullname must be less than 240 characters"],
-    minlength: [6, "Fullname should be more than 6 characters"],
   })
-  public fullName: string;
+  fullName: string;
 
   @prop({
     type: SchemaTypes.String,
+    maxlength: [120, "Max length can be 120 characters"],
+    minlength: [3, "Minimum length should be 3 characters"],
+    unique: true,
     trim: true,
-    unique: true,
-    // required: [true, "Username is required"],
-    maxlength: [120, "Username must be less than 120 characters"],
-    minlength: [3, "Username should be more than 3 characters"],
   })
-  public username?: string;
+  username?: string;
 
   @prop({
     type: SchemaTypes.String,
-    unique: true,
-    // required: [true, "Email is required"],
     validate: [validator.isEmail, "Email is invalid"],
+    unique: true,
   })
-  public email?: string;
+  email?: string;
 
   @prop({
     type: SchemaTypes.Boolean,
     required: [true, "Email verification status is required"],
     default: false,
   })
-  public emailVerified: boolean;
-
-  @prop({
-    type: SchemaTypes.Boolean,
-    required: [true, "Account status is required"],
-    default: false,
-  })
-  public isActive: boolean;
+  isEmailVerified: boolean;
 
   @prop({ type: SchemaTypes.String, select: false })
-  public emailVerificationToken?: string;
+  emailVerificationToken?: string | null;
 
   @prop({ type: SchemaTypes.Date, select: false })
-  public emailVerificationTokenExpiry?: Date;
-
-  /**
-   * It's value can be either null OR UserProfilePic sub-document.
-   * Profile pic can be removed by the user
-   */
-  @prop({ type: () => UserProfilePic })
-  public profilePic?: UserProfilePic | null;
+  emailVerificationTokenExpiry?: Date | null;
 
   @prop({
     type: () => SchemaTypes.Array,
-    required: true,
+    required: [true, "User privileges are required"],
     default: [UserRole.STUDENT],
   })
-  public roles: UserRole[];
+  roles: UserRole[];
 
-  @prop({
-    type: SchemaTypes.String,
-    select: false,
-    // required: [true, "Password is required"],
-  })
-  public passwordDigest?: string;
-
-  /**
-   * It can have a value of null
-   */
   @prop({ type: SchemaTypes.String, select: false })
-  public passwordResetToken?: string | null;
+  passwordDigest?: string;
 
-  /**
-   * It can have a value of null
-   */
+  @prop({ type: SchemaTypes.String, select: false })
+  passwordResetToken?: string | null;
+
   @prop({ type: SchemaTypes.Date, select: false })
-  public passwordResetTokenExpiry?: Date | null;
+  passwordResetTokenExpiry?: Date | null;
 
-  /**
-   * Array of sub-document
-   */
-  @prop({ type: () => SchemaTypes.Array })
-  public socialAuthInfo?: { id: string; provider: SocialAuthProvider }[];
+  /** @remarks Users can unset their profile image */
+  @prop({ type: () => ProfileImage })
+  profileImage?: ProfileImage | null;
 
-  // ========================================
-  // INSTANCE METHODS
-  // ========================================
+  // ===============================
+  // Instance methods
+  // ===============================
 
   /**
    * Check if the password given by the user is correct or not
-   *
-   * @param givenPassword The password given by the user
-   * @returns {Promise<boolean>} Returns a promise whose value can be either true if the password is correct else false
+   * @param givenPwd The password given by the user
+   * @returns Promise whose value is either true Or false
    */
-  async checkPassword(givenPassword: string): Promise<boolean> {
-    return await bcrypt.compare(givenPassword, this.passwordDigest);
+  async checkPassword(givenPwd: string): Promise<boolean> {
+    return await bcrypt.compare(givenPwd, this.passwordDigest);
   }
 
   /**
    * Generate a random token, hash it and then save the hashed token to the user's document along with an
    * expiry date of 10mins.
    *
-   * @returns {string} Returns the reset token (not hashed i.e. not the one that is stored in the database)
+   * @returns Reset token (not hashed i.e. not the one that is stored in the database)
    */
-  generatePasswordResetToken(): string {
+  getPwdResetToken(): string {
     /**
      * This token will be sent to the user and user will sent this back to the back-end
      * while reseting password. The token given by user will be hashed and checked
@@ -190,9 +157,9 @@ export class UserClass {
    * Generate a random token, hash it and then save the hashed token to the user's document along with an
    * expiry date of 10mins.
    *
-   * @returns {string} Returns the email verification token (not hashed i.e. not the one that is stored in the database)
+   * @returns Email verification token (not hashed i.e. not the one that is stored in the database)
    */
-  generateEmailVerificationToken(): string {
+  getEmailVerificationToken(): string {
     /**
      * This token will be sent to the user and user will sent this back to the back-end
      * while verifying the email. The token given by user will be hashed and checked
@@ -214,44 +181,33 @@ export class UserClass {
     return token;
   }
 
-  generateAccessToken(): string {
-    const payload = {
-      id: this._id,
-      userId: this.userId,
-      username: this.username,
-      email: this.email,
-    };
-
-    // short duration token, new one is generated with valid refresh token
+  /** Generate access token for JWT authentication method */
+  getAccessToken(): string {
+    let payload = { id: this._id, username: this.username, email: this.email };
+    // long duration but does expires
     return jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, {
       expiresIn: "20m",
     });
   }
 
-  generateRefreshToken(): string {
-    const payload = {
-      id: this._id,
-      userId: this.userId,
-      username: this.username,
-      email: this.email,
-    };
-
+  /** Generate refresh token for JWT authentication method */
+  getRefreshToken(): string {
+    let payload = { id: this._id, username: this.username, email: this.email };
     // long duration but does expires
     return jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET, {
       expiresIn: "60m",
     });
   }
 
-  // ========================================
-  // VIRTUALS
-  // ========================================
+  // ===============================
+  // Virtuals
+  // ===============================
 
   _id!: Types.ObjectId;
   /** Transformed MongoDB `_id` to `id` */
-  public get id() {
+  get id() {
     return this._id.toHexString();
   }
 }
 
-/** User model generated using Typegoose */
 export const UserModel = getModelForClass(UserClass);
