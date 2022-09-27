@@ -1,7 +1,6 @@
 /**
  * Client response module
  * @module /src/utils/client-response.ts
- *
  * @description Define utils for handling client responses
  */
 
@@ -20,8 +19,7 @@ interface ClientResponseOptions {
  * @param {Response} res Response to send to the client
  * @param {ClientResponseOptions} options Options for the response
  * @returns {void} void
- * @example
- * sendResponse(res, { status: 200, msg: "Success" })
+ * @example sendResponse(res, { status: 200, msg: "Success" })
  */
 export function sendResponse(
   res: Response,
