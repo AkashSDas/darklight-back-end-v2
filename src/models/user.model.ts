@@ -18,18 +18,33 @@ export enum UserRole {
   ADMIN = "admin",
 }
 
+export enum OAuthProvider {
+  GOOGLE = "google",
+  FACEBOOK = "facebook",
+  TWITTER = "twitter",
+}
+
 // ===============================
 // Typegoose schema classes
 // ===============================
 
 /** User profile image sub-document class */
-class ProfileImage {
+class ProfileImageClass {
   /** id of the image saved in the cloud */
   @prop({ type: SchemaTypes.String, required: true })
   id: string;
 
   @prop({ type: SchemaTypes.String, required: true })
   URL: string;
+}
+
+/** User social auth provider sub-document class */
+class OAuthProviderClass {
+  @prop({ type: SchemaTypes.String, required: true })
+  id: string;
+
+  @prop({ type: SchemaTypes.String, required: true, enum: OAuthProvider })
+  provider: OAuthProvider;
 }
 
 /** User model class */
@@ -110,8 +125,11 @@ export class UserClass {
   passwordResetTokenExpiry?: Date | null;
 
   /** @remarks Users can unset their profile image */
-  @prop({ type: () => ProfileImage })
-  profileImage?: ProfileImage | null;
+  @prop({ type: () => ProfileImageClass })
+  profileImage?: ProfileImageClass | null;
+
+  @prop({ type: () => SchemaTypes.Array, required: true, default: [] })
+  oauthProviders: OAuthProviderClass[];
 
   // ===============================
   // Instance methods
