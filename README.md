@@ -1,5 +1,9 @@
 # darklight-back-end
 
+## Warning
+
+🚨 Things are broken since the utils were updated but the their consumers are not updated to use the new utils.
+
 ## Social Auth
 
 ### Google
